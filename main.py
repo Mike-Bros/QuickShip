@@ -1,16 +1,28 @@
-# This is a sample Python script.
+from models.Package import Package
+from models.Truck import Truck
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    p1 = Package(1, "1948 Circle", "Savage", "MN", 55811, "EOD", 3, "This is a special note")
+    p2 = Package(2, "300 State St", "Prior Lake", "MN", 55821, "EOD", 2,)
+    p3 = Package(3, "600 E 900 South", "Holladay", "MN", 53765, "10:30 AM", 2,)
+    #p1.print()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    t1 = Truck()
+    t1.load_package(p1)
+    t1.load_package(p2)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.load_package(p3)
+    t1.print()
+
