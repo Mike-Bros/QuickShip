@@ -8,10 +8,15 @@ class Truck:
     def load_package(self, package):
         if self.can_add_package():
             self.packages.append(package)
-            print("Added package: " + str(package.id) + " to truck. Current Capacity: " + str(self.current_capacity()))
+            print("Loaded package #" + str(package.id) + " | Current Capacity: " + str(self.current_capacity()))
         else:
             print("Tried to add too many packages to the truck, the below package was not added")
             package.print()
+
+    def unload_package(self, package):
+        if self.current_capacity() > 0:
+            self.packages.remove(package)
+            print("Package #" + str(package.id) + " was unloaded")
 
     def print(self):
         heading = "Truck Details"
