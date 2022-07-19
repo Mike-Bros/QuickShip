@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-from models.HashTable import HashTable
 from models.Package import Package
 from models.Truck import Truck
 from services.DistanceService import DistanceService
@@ -12,6 +11,9 @@ if __name__ == '__main__':
     distance_service = DistanceService()
     distance = distance_service.get_distance_between("177 W Price Ave", "3060 Lester St")
     print(distance)
+
+    package_service = PackageService()
+    package_service.package_hash.print_table()
 
     # place_service = PlaceService()
     # for place in place_service.place_list:

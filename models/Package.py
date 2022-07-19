@@ -1,4 +1,7 @@
 class Package:
+    """A model of a package to better store and retrieve package attributes
+
+    """
     def __init__(self, id, address, city, state, zip, deadline, mass, notes=""):
         self.id = id
         self.address = address
@@ -11,6 +14,9 @@ class Package:
         self.seperator = "********************************************************************************"
 
     def print(self):
+        """Helper printing function for the package model
+
+        """
         heading = "Package Details"
         stats = "ID: " + str(self.id) + " | Mass: " + str(self.mass) + " | Deadline: " + self.deadline
         full_address = "Address: " + self.address + " " + self.city + " " + self.state + ", " + str(self.zip)

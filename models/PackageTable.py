@@ -1,4 +1,7 @@
-class PackageList:
+class PackageTable:
+    """An abstract data structure that uses a chaining hash table to store package data
+
+    """
     def __init__(self, initial_capacity=10):
         self.seperator = "********************************************************************************"
         self.table = []
@@ -54,9 +57,5 @@ class PackageList:
         print(self.seperator)
 
     def get_bucket(self, item):
-        bucket = self.my_hash(item) % len(self.table)
+        bucket = hash(item) % len(self.table)
         return bucket
-
-    def my_hash(self, item):
-        # todo
-        return hash(item)

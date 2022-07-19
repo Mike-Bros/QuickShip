@@ -3,11 +3,17 @@ import pandas as pd
 
 
 class PlaceService:
+    """A service class to assist with retrieving places
+
+    """
     def __init__(self):
         self.place_list = []
         self.ingest_places()
 
     def ingest_places(self):
+        """A function that runs during class init to read in Place data from distances.csv in root.
+
+        """
         print("Ingesting places...")
         df = pd.read_csv('./distances.csv', keep_default_na="")
         for index, row in df.iterrows():
