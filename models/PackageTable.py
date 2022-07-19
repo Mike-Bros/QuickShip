@@ -9,6 +9,15 @@ class PackageTable:
             self.table.append([])
 
     def insert_or_update(self, key, value):
+        """Insert a package into table or update existing entry
+
+        :param key: The ID of the package to be added
+        :type key: int
+        :param value: The package object to be added
+        :type value: models.Package
+        :return: bool indicating success or failure of insert/update
+        :rtype: bool
+        """
         bucket = self.get_bucket(key)
         bucket_list = self.table[bucket]
 
@@ -22,6 +31,13 @@ class PackageTable:
         return True
 
     def search(self, key):
+        """Search by package ID
+
+        :param key: Package ID
+        :type key: int
+        :return: Package object or None if key does not exist
+        :rtype: models.Package
+        """
         bucket = self.get_bucket(key)
         bucket_list = self.table[bucket]
 
@@ -32,6 +48,11 @@ class PackageTable:
                 return None
 
     def remove(self, key):
+        """Remove by package ID
+
+        :param key: Package ID
+        :type key: int
+        """
         bucket = self.get_bucket(key)
         bucket_list = self.table[bucket]
 
@@ -40,6 +61,11 @@ class PackageTable:
                 bucket_list.remove([key_value[0], key_value[1]])
 
     def print_table(self):
+        """Helper function to print the current contents of the table
+
+        Prints all buckets and their content displaying the package ID and Address for human readability
+
+        """
         print(self.seperator)
         for i in range(len(self.table)):
             if self.table[i] != []:
@@ -57,5 +83,12 @@ class PackageTable:
         print(self.seperator)
 
     def get_bucket(self, item):
+        """Helper function to get the bucket index of the given item
+
+        :param item: Package ID
+        :type item: int
+        :return: Bucket Index
+        :rtype: int
+        """
         bucket = hash(item) % len(self.table)
         return bucket
