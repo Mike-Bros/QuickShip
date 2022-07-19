@@ -3,15 +3,24 @@ from datetime import timedelta
 from models.HashTable import HashTable
 from models.Package import Package
 from models.Truck import Truck
+from services.DistanceService import DistanceService
 from services.PackageService import PackageService
 from services.PlaceService import PlaceService
 from services.RouteService import RouteService
 
 if __name__ == '__main__':
-    package_service = PackageService()
-    package_hash = package_service.package_hash
+    distance_service = DistanceService()
+    distance = distance_service.get_distance_between("177 W Price Ave", "3060 Lester St")
+    print(distance)
 
-    package_hash.print_table()
+    # place_service = PlaceService()
+    # for place in place_service.place_list:
+    #     place.print()
+
+    # package_service = PackageService()
+    # package_hash = package_service.package_hash
+    #
+    # package_hash.print_table()
 
     # t1 = Truck()
     # for package in package_list:

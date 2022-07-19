@@ -9,9 +9,8 @@ class PlaceService:
 
     def ingest_places(self):
         print("Ingesting places...")
-        df = pd.read_csv('./places.csv', keep_default_na="")
+        df = pd.read_csv('./distances.csv', keep_default_na="")
         for index, row in df.iterrows():
-            new_place = Place(row['Name'], row['Address'], row['Zip'])
+            new_place = Place(index, row['Name'], row['Address'], row['Zip'])
             self.place_list.append(new_place)
         print("Finished ingesting places")
-
