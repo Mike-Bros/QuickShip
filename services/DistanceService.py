@@ -7,6 +7,7 @@ class DistanceService:
     """A service class to assist with retrieving distance values
 
     """
+
     def __init__(self):
         self.distance_list = []
         self.place_list = PlaceService().place_list
@@ -53,5 +54,37 @@ class DistanceService:
         if distance_value == '':
             distance_value = self.distance_list[place_b_index][place_a_index]
 
-
         return float(distance_value)
+
+    def min_distance(self, address, packages):
+        """Get the minimum distance to travel given the starting address and packages that still need to be delivered
+
+        :param address: Starting address
+        :type address: str
+        :param packages: Packages that still need to be delivered
+        :type packages: list
+        :return: The closest place to address
+        :rtype: models.Place
+        """
+
+        min_distance = None
+        closest_place = None
+        for place in self.place_list:
+            if place.address != 'HUB' and place.address != address:
+                temp_distance = self.get_distance_between(place.address, address)
+                if min_distance is None:
+                    min_distance = temp_distance
+                if closest_place is None:
+                    closest_place = place
+
+                elif temp_distance < min_distance:
+                    print("New closest place found. Old distance: " + str(min_distance) + " | New Distance: " + str(
+                        temp_distance))
+                    print("Old closest place: " + closest_place.address + " | New Place: " + place.address)
+                    closest_place = place
+                    min_distance = temp_distance
+
+        if closest_place is None:
+            raise Exception("Something very wrong has occurred, no closest place has been found")
+
+        return closest_place

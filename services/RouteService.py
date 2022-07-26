@@ -11,7 +11,7 @@ class RouteService:
         self.start_time = datetime(2022, 1, 1, 8, 0)
         self.current_time = self.start_time
         self.time_increment = 2
-        self.package_list = PackageService().package_list
+        self.package_list = PackageService().package_hash
         self.place_list = PlaceService().place_list
         self.truck_1 = Truck()
         self.truck_2 = Truck()

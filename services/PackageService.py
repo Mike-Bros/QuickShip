@@ -9,6 +9,7 @@ class PackageService:
     """
     def __init__(self):
         self.package_hash = PackageTable()
+        self.all_package_list = []
         self.ingest_packages()
 
     def ingest_packages(self):
@@ -21,4 +22,9 @@ class PackageService:
             new_package = Package(row['ID'], row['Address'], row['City'], row['State'], row['Zip'], row['Deadline'],
                                   row['Mass'], row['Notes'])
             self.package_hash.insert_or_update(new_package.id, new_package)
+            self.all_package_list.append(new_package)
         print("Finished ingesting packages")
+
+    def truck_load_packages(self):
+        
+        pass

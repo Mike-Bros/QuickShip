@@ -8,12 +8,36 @@ from services.PlaceService import PlaceService
 from services.RouteService import RouteService
 
 if __name__ == '__main__':
-    distance_service = DistanceService()
-    distance = distance_service.get_distance_between("177 W Price Ave", "3060 Lester St")
-    print(distance)
-
+    place_service = PlaceService()
     package_service = PackageService()
-    package_service.package_hash.print_table()
+    distance_service = DistanceService()
+
+    # package_service.package_hash.print_table()
+
+    t1 = Truck()
+    for package in package_service.all_package_list:
+        if t1.can_add_package():
+            t1.load_package(package)
+        else:
+            break
+
+    address = "410 S State St"
+    closest_place = distance_service.min_distance(address, t1.packages)
+    print()
+    print(
+        address + " is closest to: " + closest_place.address + " with a distance of: " + str(distance_service.get_distance_between(
+            address, closest_place.address)))
+
+    # print(distance_service.get_distance_between('195 W Oakland Ave', '195 W Oakland Ave'))
+    # print(distance_service.get_distance_between('',''))
+
+    # for package in package_list:
+    #     if package.id == 1 or package.id == 8:
+    #         t1.unload_package(package)
+    #
+    # places_list = PlaceService().place_list
+    # for place in places_list:
+    #     place.print()
 
     # place_service = PlaceService()
     # for place in place_service.place_list:
@@ -23,20 +47,6 @@ if __name__ == '__main__':
     # package_hash = package_service.package_hash
     #
     # package_hash.print_table()
-
-    # t1 = Truck()
-    # for package in package_list:
-    #     if t1.can_add_package():
-    #         t1.load_package(package)
-    # t1.print()
-    #
-    # for package in package_list:
-    #     if package.id == 1 or package.id == 8:
-    #         t1.unload_package(package)
-    #
-    # places_list = PlaceService().place_list
-    # for place in places_list:
-    #     place.print()
 
     # items = [
     #     [1, "123 Main"],
