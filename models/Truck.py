@@ -2,7 +2,9 @@ class Truck:
     """A model of a truck to facilitate packaging simulation per project requirements
 
     """
-    def __init__(self):
+
+    def __init__(self, name):
+        self.name = name
         self.max_capacity = 16
         self.avg_speed = 18
         self.packages = []
@@ -18,7 +20,8 @@ class Truck:
         """
         if self.can_add_package():
             self.packages.append(package)
-            print("Loaded package #" + str(package.id) + " | Current Capacity: " + str(self.current_capacity()))
+            print(self.name + " Loaded package #" + str(package.id) + " | Current Capacity: " + str(
+                self.current_capacity()) + "/" + str(self.max_capacity))
         else:
             print("Tried to add too many packages to the truck, the below package was not added")
             package.print()

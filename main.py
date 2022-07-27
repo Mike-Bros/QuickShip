@@ -8,25 +8,32 @@ from services.PlaceService import PlaceService
 from services.RouteService import RouteService
 
 if __name__ == '__main__':
-    place_service = PlaceService()
-    package_service = PackageService()
-    distance_service = DistanceService()
+    route_service = RouteService()
+    route_service.load_trucks()
+
+    available_packages = route_service.get_available_packages()
+    for package in available_packages:
+        print(package.id)
+
+    # place_service = PlaceService()
+    # package_service = PackageService()
+    # distance_service = DistanceService()
 
     # package_service.package_hash.print_table()
 
-    t1 = Truck()
-    for package in package_service.all_package_list:
-        if t1.can_add_package():
-            t1.load_package(package)
-        else:
-            break
-
-    address = "410 S State St"
-    closest_place = distance_service.min_distance(address, t1.packages)
-    print()
-    print(
-        address + " is closest to: " + closest_place.address + " with a distance of: " + str(distance_service.get_distance_between(
-            address, closest_place.address)))
+    # t1 = Truck()
+    # for package in package_service.all_package_list:
+    #     if t1.can_add_package():
+    #         t1.load_package(package)
+    #     else:
+    #         break
+    #
+    # address = "410 S State St"
+    # closest_place = distance_service.min_distance(address, t1.packages)
+    # print()
+    # print(
+    #     address + " is closest to: " + closest_place.address + " with a distance of: " + str(distance_service.get_distance_between(
+    #         address, closest_place.address)))
 
     # print(distance_service.get_distance_between('195 W Oakland Ave', '195 W Oakland Ave'))
     # print(distance_service.get_distance_between('',''))
