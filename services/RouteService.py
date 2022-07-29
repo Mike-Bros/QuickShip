@@ -98,27 +98,32 @@ class RouteService:
         if truck_id == 3:
             self.truck_3.load_package(self.get_package_by_id(package_id))
 
-    def print_package_list(self, package_list, label="", package_attribute="id"):
+    def print_route_info(self, package_list, label="", package_attribute="id"):
         print(label + " (List of the Package." + package_attribute + ")")
         print("[", end='')
         count = 0
         for package in package_list:
             count = count + 1
             if count == len(package_list):
-                distance = self.distance_service.get_total_distance(package_list)
-                distance = distance.__round__(2)
-                minutes = (distance/18) * 60
+                first_delivery_distance = self.distance_service.get_distance_between("HUB", package_list[0].address)
+                route_distance = self.distance_service.get_total_distance(package_list)
+                total_distance = first_delivery_distance + route_distance
+                total_distance = total_distance.__round__(2)
+                minutes = (total_distance/18) * 60
                 minutes = minutes.__round__(2)
-                print(str(getattr(package, package_attribute)) + "] - Distance: " + str(distance) + " | Minutes: " + str(minutes))
+                print(str(getattr(package, package_attribute)) + "] - Distance: " + str(total_distance) + " | Minutes: " + str(minutes))
             else:
                 print(getattr(package, package_attribute), end=', ')
 
     def sort_truck_packages(self, truck_name):
         print("************************************************************")
         print("Sorting for: " + getattr(self, truck_name).name)
-        self.print_package_list(getattr(self, truck_name).packages, "Before Sort")
-        getattr(self, truck_name).packages = self.distance_service.greedy_shortest_path(
+
+        self.print_route_info(getattr(self, truck_name).packages, "Before Sort")
+
+        getattr(self, truck_name).packages = self.distance_service.brute_shortest_path(
             getattr(self, truck_name).packages)
-        self.print_package_list(getattr(self, truck_name).packages, "After Sort")
+
+        self.print_route_info(getattr(self, truck_name).packages, "After Sort")
 
 

@@ -8,6 +8,7 @@ class Truck:
         self.max_capacity = 16
         self.avg_speed = 18
         self.packages = []
+        self.starting_address = "HUB"
         self.seperator = "--------------------------------------------------------------------------------"
 
     def load_package(self, package):

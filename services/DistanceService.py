@@ -47,7 +47,7 @@ class DistanceService:
 
         return sum(distance_list)
 
-    def greedy_shortest_path(self, package_list):
+    def brute_shortest_path(self, package_list):
         current_cost = float('inf')
         current_best_path = []
 
