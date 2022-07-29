@@ -53,6 +53,11 @@ class Truck:
             package.print()
         print(self.seperator)
 
+    def print_packages(self):
+        for package in self.packages:
+            print(package.id, end=', ')
+        print()
+
     def current_capacity(self):
         """Helper function to get the current number of packages in the truck
 
