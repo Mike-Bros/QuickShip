@@ -1,4 +1,5 @@
 import copy
+import itertools
 
 import pandas as pd
 
@@ -33,6 +34,81 @@ class DistanceService:
             if place.address == address:
                 return place
         return None
+
+    def get_total_distance(self, package_list):
+        last_package_address = None
+        distance_list = []
+
+        for package in package_list:
+            if last_package_address is None:
+                last_package_address = copy.deepcopy(package.address)
+            else:
+                distance_list.append(self.get_distance_between(package.address, last_package_address))
+
+        return sum(distance_list)
+
+    def greedy_shortest_path(self, package_list):
+        current_cost = float('inf')
+        current_best_path = []
+
+        current_best_path_first_half = []
+        package_list_first_half = []
+        current_best_path_second_half = []
+        package_list_second_half = []
+
+        if len(package_list) >= 9:
+            count = 0
+            for package in package_list:
+                count = count + 1
+                if count <= 8:
+                    package_list_first_half.append(package)
+                else:
+                    package_list_second_half.append(package)
+            count = 0
+            for package_list_iteration in itertools.permutations(package_list_first_half):
+                count = count + 1
+                # print("first half" + str(count))
+                iteration_cost = self.get_total_distance(package_list_iteration)
+                if iteration_cost < current_cost:
+                    current_best_path_first_half = package_list_iteration
+                    current_cost = iteration_cost
+
+            count = 0
+            current_cost = float('inf')
+            for package_list_iteration in itertools.permutations(package_list_second_half):
+                count = count + 1
+                # print("second half" + str(count))
+                iteration_cost = self.get_total_distance(package_list_iteration)
+                if iteration_cost < current_cost:
+                    current_best_path_second_half = package_list_iteration
+                    current_cost = iteration_cost
+
+            for package in current_best_path_first_half:
+                current_best_path.append(package)
+
+            for package in current_best_path_second_half:
+                current_best_path.append(package)
+
+        else:
+            count = 0
+            for package_list_iteration in itertools.permutations(package_list):
+                count = count + 1
+                # print(count)
+                iteration_cost = self.get_total_distance(package_list_iteration)
+                if iteration_cost < current_cost:
+                    current_best_path = package_list_iteration
+                    current_cost = iteration_cost
+
+                # print("[", end='')
+                # count = 0
+                # for package in package_list_iteration:
+                #     count = count + 1
+                #     if count == len(package_list_iteration):
+                #         print(str(package.id) + "] - Itter Cost: " + str(iteration_cost))
+                #     else:
+                #         print(package.id, end=', ')
+
+        return current_best_path
 
     def get_distance_between(self, address_a, address_b):
         """Get Distance Between Addresses
@@ -90,7 +166,6 @@ class DistanceService:
         #     print(package.id, end=', ')
         # print(']')
 
-        # find the min_distance of
         for package in packages:
             temp_distance = self.get_distance_between(package.address, address)
             if min_distance is None:
@@ -106,36 +181,6 @@ class DistanceService:
                 # closest_place Place object
                 closest_package_id = copy.deepcopy(package.id)
                 min_distance = copy.deepcopy(temp_distance)
-
-        # for package in packages:
-        #     if package.address != 'HUB' and package.address != address:
-        #         temp_distance = self.get_distance_between(package.address, address)
-        #         if min_distance is None:
-        #             min_distance = temp_distance
-        #         if closest_place is None:
-        #             closest_place = self.get_place_by_address(package.address)
-        #
-        #         elif temp_distance < min_distance:
-        #             print("New closest place found. Old distance: " + str(min_distance) + " | New Distance: " + str(
-        #                 temp_distance))
-        #             print("Old closest place: " + closest_place.address + " | New Place: " + package.address)
-        #             closest_place = self.get_place_by_address(package.address)
-        #             min_distance = temp_distance
-
-        # for place in self.place_list:
-        #     if place.address != 'HUB' and place.address != address:
-        #         temp_distance = self.get_distance_between(place.address, address)
-        #         if min_distance is None:
-        #             min_distance = temp_distance
-        #         if closest_place is None:
-        #             closest_place = place
-        #
-        #         elif temp_distance < min_distance:
-        #             print("New closest place found. Old distance: " + str(min_distance) + " | New Distance: " + str(
-        #                 temp_distance))
-        #             print("Old closest place: " + closest_place.address + " | New Place: " + place.address)
-        #             closest_place = place
-        #             min_distance = temp_distance
 
         if closest_package_id is None:
             raise Exception("Something very wrong has occurred, no closest package has been found")

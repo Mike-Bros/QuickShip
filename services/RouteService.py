@@ -98,82 +98,27 @@ class RouteService:
         if truck_id == 3:
             self.truck_3.load_package(self.get_package_by_id(package_id))
 
-    def sort_truck_packages(self, truck_id):
-        sorted_packages = []
+    def print_package_list(self, package_list, label="", package_attribute="id"):
+        print(label + " (List of the Package." + package_attribute + ")")
+        print("[", end='')
+        count = 0
+        for package in package_list:
+            count = count + 1
+            if count == len(package_list):
+                distance = self.distance_service.get_total_distance(package_list)
+                distance = distance.__round__(2)
+                minutes = (distance/18) * 60
+                minutes = minutes.__round__(2)
+                print(str(getattr(package, package_attribute)) + "] - Distance: " + str(distance) + " | Minutes: " + str(minutes))
+            else:
+                print(getattr(package, package_attribute), end=', ')
 
-        if truck_id == 1:
-            first_closest_package_id = self.get_package_by_id(
-                self.distance_service.get_closest_package_id('HUB', self.truck_1.packages))
-            sorted_packages.append(first_closest_package_id)
-            last_package = first_closest_package_id
-            self.truck_1.packages.remove(last_package)
+    def sort_truck_packages(self, truck_name):
+        print("************************************************************")
+        print("Sorting for: " + getattr(self, truck_name).name)
+        self.print_package_list(getattr(self, truck_name).packages, "Before Sort")
+        getattr(self, truck_name).packages = self.distance_service.greedy_shortest_path(
+            getattr(self, truck_name).packages)
+        self.print_package_list(getattr(self, truck_name).packages, "After Sort")
 
-            while len(self.truck_1.packages) > 0:
-                next_package = self.get_package_by_id(
-                    self.distance_service.get_closest_package_id(last_package.address, self.truck_1.packages))
-                # print("Next package: " + str(next_package.id))
-                sorted_packages.append(next_package)
-                last_package = next_package
-                # print("Last Package: " + str(last_package.id))
-                self.truck_1.packages.remove(last_package)
 
-            self.truck_1.packages = sorted_packages
-        if truck_id == 2:
-            first_closest_package_id = self.get_package_by_id(
-                self.distance_service.get_closest_package_id('HUB', self.truck_2.packages))
-            sorted_packages.append(first_closest_package_id)
-            last_package = first_closest_package_id
-            self.truck_2.packages.remove(last_package)
-
-            while len(self.truck_2.packages) > 0:
-                next_package = self.get_package_by_id(
-                    self.distance_service.get_closest_package_id(last_package.address, self.truck_2.packages))
-                # print("Next package: " + str(next_package.id))
-                sorted_packages.append(next_package)
-                last_package = next_package
-                # print("Last Package: " + str(last_package.id))
-                self.truck_2.packages.remove(last_package)
-
-            self.truck_2.packages = sorted_packages
-        if truck_id == 3:
-            first_closest_package_id = self.get_package_by_id(
-                self.distance_service.get_closest_package_id('HUB', self.truck_3.packages))
-            sorted_packages.append(first_closest_package_id)
-            last_package = first_closest_package_id
-            self.truck_3.packages.remove(last_package)
-
-            while len(self.truck_3.packages) > 0:
-                next_package = self.get_package_by_id(
-                    self.distance_service.get_closest_package_id(last_package.address, self.truck_3.packages))
-                # print("Next package: " + str(next_package.id))
-                sorted_packages.append(next_package)
-                last_package = next_package
-                # print("Last Package: " + str(last_package.id))
-                self.truck_3.packages.remove(last_package)
-
-            self.truck_3.packages = sorted_packages
-
-    def get_distance_list(self, truck_id):
-        last_package_address = None
-        distance_list = []
-
-        if truck_id == 1:
-            for package in self.truck_1.packages:
-                if last_package_address is None:
-                    last_package_address = copy.deepcopy(package.address)
-                else:
-                    distance_list.append(self.distance_service.get_distance_between(package.address, last_package_address))
-        if truck_id == 2:
-            for package in self.truck_2.packages:
-                if last_package_address is None:
-                    last_package_address = copy.deepcopy(package.address)
-                else:
-                    distance_list.append(self.distance_service.get_distance_between(package.address, last_package_address))
-        if truck_id == 3:
-            for package in self.truck_3.packages:
-                if last_package_address is None:
-                    last_package_address = copy.deepcopy(package.address)
-                else:
-                    distance_list.append(self.distance_service.get_distance_between(package.address, last_package_address))
-
-        return distance_list

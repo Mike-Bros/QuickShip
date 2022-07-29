@@ -10,80 +10,6 @@ from services.PlaceService import PlaceService
 from services.RouteService import RouteService
 
 
-def sort_packages():
-    print()
-    print("********** Truck 1 **********")
-    print("Package list before sort: [", end='')
-    for package in route_service.truck_1.packages:
-        print(package.id, end=', ')
-    print(']')
-
-    distance_list = route_service.get_distance_list(1)
-    unsorted_distance = sum(distance_list)
-    print(distance_list)
-    print("Unsorted distance for truck: " + str(unsorted_distance))
-
-    print()
-    route_service.sort_truck_packages(1)
-
-    print("Package list after sort: [", end='')
-    for package in route_service.truck_1.packages:
-        print(package.id, end=', ')
-    print(']')
-
-    distance_list = route_service.get_distance_list(1)
-    print(distance_list)
-    print("Unsorted total distance: " + str(unsorted_distance) + " | Sorted total distance: " + str(sum(distance_list)))
-
-    print()
-    print("********** Truck 2 **********")
-    print("Package list before sort: [", end='')
-    for package in route_service.truck_2.packages:
-        print(package.id, end=', ')
-    print(']')
-
-    distance_list = route_service.get_distance_list(2)
-    unsorted_distance = sum(distance_list)
-    print(distance_list)
-    print("Unsorted distance for truck: " + str(unsorted_distance))
-
-    print()
-    route_service.sort_truck_packages(2)
-
-    print("Package list after sort: [", end='')
-    for package in route_service.truck_2.packages:
-        print(package.id, end=', ')
-    print(']')
-
-    distance_list = route_service.get_distance_list(2)
-    print(distance_list)
-    print("Unsorted total distance: " + str(unsorted_distance) + " | Sorted total distance: " + str(sum(distance_list)))
-
-    print()
-    print("********** Truck 3 **********")
-    print("Package list before sort: [", end='')
-    for package in route_service.truck_3.packages:
-        print(package.id, end=', ')
-    print(']')
-
-    distance_list = route_service.get_distance_list(3)
-    unsorted_distance = sum(distance_list)
-    print(distance_list)
-    print("Unsorted distance for truck: " + str(unsorted_distance))
-
-    print()
-    route_service.sort_truck_packages(3)
-
-    print("Package list after sort: [", end='')
-    for package in route_service.truck_3.packages:
-        print(package.id, end=', ')
-    print(']')
-
-    distance_list = route_service.get_distance_list(3)
-    print(distance_list)
-    print("Unsorted total distance: " + str(unsorted_distance) + " | Sorted total distance: " + str(sum(distance_list)))
-
-
 if __name__ == '__main__':
     route_service = RouteService()
     route_service.load_all_trucks()
@@ -93,8 +19,13 @@ if __name__ == '__main__':
     #     print(package.id)
 
     # print(route_service.get_package_by_address('177 W Price Ave').id)
-
-    sort_packages()
+    #
+    route_service.sort_truck_packages("truck_1")
+    route_service.sort_truck_packages("truck_2")
+    route_service.sort_truck_packages("truck_3")
+    # route_service.sort_truck_packages(2)
+    # route_service.sort_truck_packages(3)
+    # sort_packages()
 
     # place_service = PlaceService()
     # package_service = PackageService()
