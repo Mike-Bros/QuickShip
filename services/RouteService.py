@@ -115,7 +115,7 @@ class RouteService:
             else:
                 print(getattr(package, package_attribute), end=', ')
 
-    def sort_truck_packages(self, truck_name):
+    def sort_truck_packages_brute(self, truck_name):
         print("************************************************************")
         print("Sorting for: " + getattr(self, truck_name).name)
 
@@ -126,4 +126,13 @@ class RouteService:
 
         self.print_route_info(getattr(self, truck_name).packages, "After Sort")
 
+    def sort_truck_packages_tsp(self, truck_name):
+        print("************************************************************")
+        print("Sorting for: " + getattr(self, truck_name).name)
 
+        self.print_route_info(getattr(self, truck_name).packages, "Before Sort")
+
+        getattr(self, truck_name).packages = self.distance_service.tsp_shortest_path(
+            getattr(self, truck_name).packages)
+
+        self.print_route_info(getattr(self, truck_name).packages, "After Sort")

@@ -35,6 +35,43 @@ class DistanceService:
                 return place
         return None
 
+    def get_distance_between(self, address_a, address_b):
+        """Get Distance Between Addresses
+
+        Given address a & b returns the distance in miles as a float.
+
+        :param address_a:
+        :type address_a: str
+        :param address_b:
+        :type address_b: str
+        :return: The distance between address a & b
+        :rtype: float
+        """
+        place_a_index = None
+        place_b_index = None
+
+        for place in self.place_list:
+            if address_a == place.address:
+                place_a_index = place.id - 1
+                break
+
+        for place in self.place_list:
+            if address_b == place.address:
+                place_b_index = place.id - 1
+                break
+
+        if place_a_index is None:
+            raise Exception('Given address A is unknown')
+
+        if place_b_index is None:
+            raise Exception('Given address B is unknown')
+
+        distance_value = self.distance_list[place_a_index][place_b_index]
+        if distance_value == '':
+            distance_value = self.distance_list[place_b_index][place_a_index]
+
+        return float(distance_value)
+
     def get_total_distance(self, package_list):
         last_package_address = None
         distance_list = []
@@ -110,79 +147,27 @@ class DistanceService:
 
         return current_best_path
 
-    def get_distance_between(self, address_a, address_b):
-        """Get Distance Between Addresses
+    def tsp_shortest_path(self, package_list):
+        current_cost = float('inf')
+        current_best_path = []
 
-        Given address a & b returns the distance in miles as a float.
+        count = 0
+        for package_list_iteration in itertools.permutations(package_list):
+            count = count + 1
+            # print(count)
+            iteration_cost = self.get_total_distance(package_list_iteration)
+            if iteration_cost < current_cost:
+                current_best_path = package_list_iteration
+                current_cost = iteration_cost
 
-        :param address_a:
-        :type address_a: str
-        :param address_b:
-        :type address_b: str
-        :return: The distance between address a & b
-        :rtype: float
-        """
-        place_a_index = None
-        place_b_index = None
+            # print("[", end='')
+            # count = 0
+            # for package in package_list_iteration:
+            #     count = count + 1
+            #     if count == len(package_list_iteration):
+            #         print(str(package.id) + "] - Itter Cost: " + str(iteration_cost))
+            #     else:
+            #         print(package.id, end=', ')
 
-        for place in self.place_list:
-            if address_a == place.address:
-                place_a_index = place.id - 1
-                break
+        return current_best_path
 
-        for place in self.place_list:
-            if address_b == place.address:
-                place_b_index = place.id - 1
-                break
-
-        if place_a_index is None:
-            raise Exception('Given address A is unknown')
-
-        if place_b_index is None:
-            raise Exception('Given address B is unknown')
-
-        distance_value = self.distance_list[place_a_index][place_b_index]
-        if distance_value == '':
-            distance_value = self.distance_list[place_b_index][place_a_index]
-
-        return float(distance_value)
-
-    def get_closest_package_id(self, address, packages):
-        """Get the package_id of the closest package given the starting address and a list of packages that still need to be delivered
-
-        :param address: Starting address
-        :type address: str
-        :param packages: Packages that still need to be delivered
-        :type packages: list
-        :return: The id of the closest package
-        :rtype: int
-        """
-
-        min_distance = None
-        closest_package_id = None
-
-        # print("Packages to choose from: [", end='')
-        # for package in packages:
-        #     print(package.id, end=', ')
-        # print(']')
-
-        for package in packages:
-            temp_distance = self.get_distance_between(package.address, address)
-            if min_distance is None:
-                # print("Setting first min_distance: " + str(temp_distance))
-                min_distance = copy.deepcopy(temp_distance)
-            if closest_package_id is None:
-                # print("Setting first closest_package_id: " + str(package.id))
-                closest_package_id = copy.deepcopy(package.id)
-
-            if temp_distance < min_distance:
-                # print("New closest place found. Old distance: " + str(min_distance) + " | New Distance: " + str(
-                #     temp_distance))
-                # closest_place Place object
-                closest_package_id = copy.deepcopy(package.id)
-                min_distance = copy.deepcopy(temp_distance)
-
-        if closest_package_id is None:
-            raise Exception("Something very wrong has occurred, no closest package has been found")
-
-        return closest_package_id
