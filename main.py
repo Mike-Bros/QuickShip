@@ -1,5 +1,7 @@
-from datetime import timedelta
+# Author: Michael Bros
+# Student_ID: 002706681
 
+from datetime import timedelta
 from models.Package import Package
 from models.Truck import Truck
 from services.DistanceService import DistanceService
@@ -9,6 +11,7 @@ from services.RouteService import RouteService
 
 
 def sort_packages():
+    print()
     print("********** Truck 1 **********")
     print("Package list before sort: [", end='')
     for package in route_service.truck_1.packages:
@@ -17,6 +20,7 @@ def sort_packages():
 
     distance_list = route_service.get_distance_list(1)
     unsorted_distance = sum(distance_list)
+    print(distance_list)
     print("Unsorted distance for truck: " + str(unsorted_distance))
 
     print()
@@ -31,6 +35,7 @@ def sort_packages():
     print(distance_list)
     print("Unsorted total distance: " + str(unsorted_distance) + " | Sorted total distance: " + str(sum(distance_list)))
 
+    print()
     print("********** Truck 2 **********")
     print("Package list before sort: [", end='')
     for package in route_service.truck_2.packages:
@@ -39,6 +44,7 @@ def sort_packages():
 
     distance_list = route_service.get_distance_list(2)
     unsorted_distance = sum(distance_list)
+    print(distance_list)
     print("Unsorted distance for truck: " + str(unsorted_distance))
 
     print()
@@ -53,25 +59,27 @@ def sort_packages():
     print(distance_list)
     print("Unsorted total distance: " + str(unsorted_distance) + " | Sorted total distance: " + str(sum(distance_list)))
 
+    print()
     print("********** Truck 3 **********")
     print("Package list before sort: [", end='')
-    for package in route_service.truck_2.packages:
+    for package in route_service.truck_3.packages:
         print(package.id, end=', ')
     print(']')
 
-    distance_list = route_service.get_distance_list(2)
+    distance_list = route_service.get_distance_list(3)
     unsorted_distance = sum(distance_list)
+    print(distance_list)
     print("Unsorted distance for truck: " + str(unsorted_distance))
 
     print()
-    route_service.sort_truck_packages(2)
+    route_service.sort_truck_packages(3)
 
     print("Package list after sort: [", end='')
-    for package in route_service.truck_2.packages:
+    for package in route_service.truck_3.packages:
         print(package.id, end=', ')
     print(']')
 
-    distance_list = route_service.get_distance_list(1)
+    distance_list = route_service.get_distance_list(3)
     print(distance_list)
     print("Unsorted total distance: " + str(unsorted_distance) + " | Sorted total distance: " + str(sum(distance_list)))
 
