@@ -3,6 +3,8 @@ import itertools
 
 import pandas as pd
 
+from models.Graph import Graph
+from models.Graph import Vertex
 from services.PlaceService import PlaceService
 
 
@@ -13,6 +15,8 @@ class DistanceService:
 
     def __init__(self):
         self.distance_list = []
+        self.graph = Graph
+        self.vertices_added = []
         self.place_list = PlaceService().place_list
         self.ingest_distances()
 
@@ -147,27 +151,85 @@ class DistanceService:
 
         return current_best_path
 
-    def tsp_shortest_path(self, package_list):
-        current_cost = float('inf')
-        current_best_path = []
+    # def tsp_shortest_path(self, truck):
+    #     route = truck.packages
+    #     i =
 
-        count = 0
-        for package_list_iteration in itertools.permutations(package_list):
-            count = count + 1
-            # print(count)
-            iteration_cost = self.get_total_distance(package_list_iteration)
-            if iteration_cost < current_cost:
-                current_best_path = package_list_iteration
-                current_cost = iteration_cost
 
-            # print("[", end='')
-            # count = 0
-            # for package in package_list_iteration:
-            #     count = count + 1
-            #     if count == len(package_list_iteration):
-            #         print(str(package.id) + "] - Itter Cost: " + str(iteration_cost))
-            #     else:
-            #         print(package.id, end=', ')
 
-        return current_best_path
+    # def tsp_shortest_path(self, truck):
+    #     # Update services graph attribute with the specified truck argument
+    #     self.update_graph(truck)
+    #
+    #     # Get a copy of the vertices on the graph,
+    #     # this will be used to remove vertices as they are visited without interfering with the Graph
+    #     unvisited_vertices = list(copy.copy(self.graph.get_vertices()))
+    #
+    #     smallest_index = 0
+    #     while len(unvisited_vertices) > 1:
+    #         for i in range(1, len(unvisited_vertices)-1):
+    #             print(str(unvisited_vertices[i].label) + " < " + str(unvisited_vertices[smallest_index].label))
+    #             print(str(unvisited_vertices[i].distance) + " < " + str(unvisited_vertices[smallest_index].distance))
+    #             if unvisited_vertices[i].distance < unvisited_vertices[smallest_index].distance:
+    #                 smallest_index = i
+    #         current_vertex = unvisited_vertices.pop(smallest_index)
+    #
+    #         # Check potential path lengths from the current vertex to all vertices
+    #         print("Checking potential path lengths for: " + str(current_vertex.label))
+    #         for vertex in self.graph.vertices_added[current_vertex]:
+    #             edge_weight = self.graph.edge_weights[(current_vertex, vertex)]
+    #             print(str(current_vertex.label) + " <-> " + str(vertex.label) + " = " + str(edge_weight))
+    #             alternative_path_distance = current_vertex.distance + edge_weight
+    #             print("Alternative Path Weight: " + str(alternative_path_distance) + " |" + str(vertex.distance))
+    #
+    #
+    #             # If shorter path from current_vertex to vertex is found, update vertex's distance and predecessor
+    #             if alternative_path_distance < vertex.distance:
+    #                 vertex.distance = alternative_path_distance
+    #                 vertex.previous_vertex = current_vertex
+    #
+    #     unvisited_vertices = list(copy.copy(self.graph.get_vertices()))
+    #     start_vertex = unvisited_vertices.pop(0)
+    #     current_best_weight = float('inf')
+    #
+    #     self.get_path(start_vertex, unvisited_vertices[7])
 
+
+
+    def get_path(self, start_vertex, end_vertex):
+        path = ""
+        current_vertex = end_vertex
+        while current_vertex is not start_vertex:
+            print("adding current vertex")
+            path = " -> " + str(current_vertex.label) + path
+            # path.append(current_vertex.label)
+            current_vertex = current_vertex.previous_vertex
+        print(path)
+        return path
+
+    def update_graph(self, truck):
+        # Reset graph in case the service has already been used
+        self.graph = Graph()
+
+        # Add vertex for starting position
+        hub_vert = Vertex(truck.starting_address, truck.starting_address)
+        hub_vert.distance = 0
+        self.graph.add_vertex(hub_vert)
+
+        # Add all vertices from package_list
+        for package in truck.packages:
+            vertex_is_unique = True
+            new_vertex = Vertex(package.id, package.address)
+            for vertex in self.graph.vertices_added:
+                if vertex.address == new_vertex.address:
+                    vertex_is_unique = False
+            if vertex_is_unique:
+                self.graph.add_vertex(new_vertex)
+
+        # For each vertex add undirected edge to every other vertex in the graph
+        for vertex_a in self.graph.vertices_added:
+            # print("Adding undirected edges to all locations from: " + str(vertex_a.address))
+            for vertex_b in self.graph.vertices_added:
+                a_to_b_weight = self.get_distance_between(vertex_a.address, vertex_b.address)
+                # print(str(vertex_a.address) + " <-> " + str(vertex_b.address) + " | Weight = " + str(a_to_b_weight))
+                self.graph.add_undirected_edge(vertex_a, vertex_b, a_to_b_weight)

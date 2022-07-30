@@ -20,9 +20,11 @@ if __name__ == '__main__':
 
     # print(route_service.get_package_by_address('177 W Price Ave').id)
     #
-    route_service.sort_truck_packages("truck_1")
-    route_service.sort_truck_packages("truck_2")
-    route_service.sort_truck_packages("truck_3")
+    # route_service.sort_truck_packages_tsp("truck_1")
+
+    route_service.sort_truck_packages_brute("truck_1")
+    route_service.sort_truck_packages_brute("truck_2")
+    route_service.sort_truck_packages_brute("truck_3")
     # route_service.sort_truck_packages(2)
     # route_service.sort_truck_packages(3)
     # sort_packages()

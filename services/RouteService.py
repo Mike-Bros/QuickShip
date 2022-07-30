@@ -109,9 +109,10 @@ class RouteService:
                 route_distance = self.distance_service.get_total_distance(package_list)
                 total_distance = first_delivery_distance + route_distance
                 total_distance = total_distance.__round__(2)
-                minutes = (total_distance/18) * 60
+                minutes = (total_distance / 18) * 60
                 minutes = minutes.__round__(2)
-                print(str(getattr(package, package_attribute)) + "] - Distance: " + str(total_distance) + " | Minutes: " + str(minutes))
+                print(str(getattr(package, package_attribute)) + "] - Distance: " + str(
+                    total_distance) + " | Minutes: " + str(minutes))
             else:
                 print(getattr(package, package_attribute), end=', ')
 
@@ -130,9 +131,11 @@ class RouteService:
         print("************************************************************")
         print("Sorting for: " + getattr(self, truck_name).name)
 
-        self.print_route_info(getattr(self, truck_name).packages, "Before Sort")
+        self.distance_service.tsp_shortest_path(getattr(self, truck_name))
 
-        getattr(self, truck_name).packages = self.distance_service.tsp_shortest_path(
-            getattr(self, truck_name).packages)
+        # self.print_route_info(getattr(self, truck_name).packages, "Before Sort")
 
-        self.print_route_info(getattr(self, truck_name).packages, "After Sort")
+        # getattr(self, truck_name).packages = self.distance_service.tsp_shortest_path(
+        #     getattr(self, truck_name).packages)
+
+        # self.print_route_info(getattr(self, truck_name).packages, "After Sort")
