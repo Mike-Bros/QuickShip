@@ -1,5 +1,7 @@
 import copy
 import itertools
+import random
+from collections import deque
 
 import pandas as pd
 
@@ -18,6 +20,8 @@ class DistanceService:
         self.graph = Graph
         self.vertices_added = []
         self.place_list = PlaceService().place_list
+        self.hub_vertex = Vertex("HUB", "HUB")
+        self.hub_vertex.distance = 0
         self.ingest_distances()
 
     def ingest_distances(self):
@@ -80,156 +84,101 @@ class DistanceService:
         last_package_address = None
         distance_list = []
 
+        distance_list.append(self.get_distance_between("HUB", package_list[0].address))
         for package in package_list:
             if last_package_address is None:
                 last_package_address = copy.deepcopy(package.address)
             else:
                 distance_list.append(self.get_distance_between(package.address, last_package_address))
+        distance_list.append(self.get_distance_between("HUB", package_list[-1].address))
 
         return sum(distance_list)
 
-    def brute_shortest_path(self, package_list):
-        current_cost = float('inf')
-        current_best_path = []
+    def greedy_shortest_path(self, truck):
+        cur_route = copy.deepcopy(truck.packages)
 
-        current_best_path_first_half = []
-        package_list_first_half = []
-        current_best_path_second_half = []
-        package_list_second_half = []
+        close_package_a = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
+        cur_route.remove(close_package_a)
+        close_package_b = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
+        cur_route.remove(close_package_b)
 
-        if len(package_list) >= 9:
-            count = 0
-            for package in package_list:
-                count = count + 1
-                if count <= 8:
-                    package_list_first_half.append(package)
-                else:
-                    package_list_second_half.append(package)
-            count = 0
-            for package_list_iteration in itertools.permutations(package_list_first_half):
-                count = count + 1
-                # print("first half" + str(count))
-                iteration_cost = self.get_total_distance(package_list_iteration)
-                if iteration_cost < current_cost:
-                    current_best_path_first_half = package_list_iteration
-                    current_cost = iteration_cost
+        # If the package list is any longer than 9 there are too many permutations to calculate quickly
+        # Instead split the list in half and find the optimized permutation of each half
+        # Then when the optimized halves are put together only the connection between the end of the first half and
+        # start of the second half is not accounted for and may be non-optimal
+        if len(cur_route) >= 9:
+            mid_index = int(len(cur_route) / 2)
+            half_a = cur_route[:mid_index]
+            half_b = cur_route[mid_index:]
+            cur_route_a = []
+            cur_route_b = []
 
-            count = 0
-            current_cost = float('inf')
-            for package_list_iteration in itertools.permutations(package_list_second_half):
-                count = count + 1
-                # print("second half" + str(count))
-                iteration_cost = self.get_total_distance(package_list_iteration)
-                if iteration_cost < current_cost:
-                    current_best_path_second_half = package_list_iteration
-                    current_cost = iteration_cost
+            # for half_a iteration add close_package_a to beginning before checking route weight
+            for route_perm in itertools.permutations(half_a):
+                new_route = [close_package_a]
+                for package in route_perm:
+                    new_route.append(package)
+                if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
+                    cur_route_a = new_route
 
-            for package in current_best_path_first_half:
-                current_best_path.append(package)
+            # Get end of cur_route_a and find close package in half_b, this will be the first package in half b route
+            # This is to get an approximately okay distance between the start and finish of the 2 optimized halves
+            half_a_end = cur_route_a[-1]
+            start_of_half_b = min(half_b, key=lambda p: self.get_distance_between(half_a_end.address, p.address))
+            half_b.remove(start_of_half_b)
 
-            for package in current_best_path_second_half:
-                current_best_path.append(package)
+            # for half_b iteration add close_package_b to beginning before checking route weight
+            for route_perm in itertools.permutations(half_b):
+                new_route = [start_of_half_b]
+                for package in route_perm:
+                    new_route.append(package)
+                new_route.append(close_package_b)
+                if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
+                    cur_route_b = new_route
+
+            if not cur_route_a or not cur_route_b:
+                raise Exception("In optimizing split route, either cur_route_a or cur_route_b was never set")
+            truck.packages = cur_route_a + cur_route_b
 
         else:
-            count = 0
-            for package_list_iteration in itertools.permutations(package_list):
-                count = count + 1
-                # print(count)
-                iteration_cost = self.get_total_distance(package_list_iteration)
-                if iteration_cost < current_cost:
-                    current_best_path = package_list_iteration
-                    current_cost = iteration_cost
+            for route_perm in itertools.permutations(cur_route):
+                # for each iteration add close_package_a to beginning and close_package_b to end
+                # before checking route weight
+                new_route = [close_package_a]
+                for package in route_perm:
+                    new_route.append(package)
+                new_route.append(close_package_b)
+                if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
+                    cur_route = new_route
 
-                # print("[", end='')
-                # count = 0
-                # for package in package_list_iteration:
-                #     count = count + 1
-                #     if count == len(package_list_iteration):
-                #         print(str(package.id) + "] - Itter Cost: " + str(iteration_cost))
-                #     else:
-                #         print(package.id, end=', ')
+            truck.packages = cur_route
 
-        return current_best_path
+    def get_total_route_weight(self, route, toggle_half_mode=''):
+        complete_route = None
+        if toggle_half_mode == '':
+            # Create complete route list of addresses including start and goal which is always HUB
+            complete_route = ["HUB"]
+            for package in route:
+                complete_route.append(package.address)
+            complete_route.append("HUB")
+        if toggle_half_mode == 'a':
+            # Create first half route list of addresses including start which is always HUB
+            complete_route = ["HUB"]
+            for package in route:
+                complete_route.append(package.address)
+        if toggle_half_mode == 'b':
+            # Create second half route list of addresses including end which is always HUB
+            complete_route = []
+            for package in route:
+                complete_route.append(package.address)
+            complete_route.append("HUB")
 
-    # def tsp_shortest_path(self, truck):
-    #     route = truck.packages
-    #     i =
+        if complete_route is None:
+            raise Exception("Value for toggle_half_mode is not known, should either be '', 'a', or 'b'")
 
+        # Calculate weight by computing distance between each index
+        weight = 0
+        for i in range(0, len(complete_route) - 1):
+            weight = weight + self.get_distance_between(complete_route[i], complete_route[i + 1])
 
-
-    # def tsp_shortest_path(self, truck):
-    #     # Update services graph attribute with the specified truck argument
-    #     self.update_graph(truck)
-    #
-    #     # Get a copy of the vertices on the graph,
-    #     # this will be used to remove vertices as they are visited without interfering with the Graph
-    #     unvisited_vertices = list(copy.copy(self.graph.get_vertices()))
-    #
-    #     smallest_index = 0
-    #     while len(unvisited_vertices) > 1:
-    #         for i in range(1, len(unvisited_vertices)-1):
-    #             print(str(unvisited_vertices[i].label) + " < " + str(unvisited_vertices[smallest_index].label))
-    #             print(str(unvisited_vertices[i].distance) + " < " + str(unvisited_vertices[smallest_index].distance))
-    #             if unvisited_vertices[i].distance < unvisited_vertices[smallest_index].distance:
-    #                 smallest_index = i
-    #         current_vertex = unvisited_vertices.pop(smallest_index)
-    #
-    #         # Check potential path lengths from the current vertex to all vertices
-    #         print("Checking potential path lengths for: " + str(current_vertex.label))
-    #         for vertex in self.graph.vertices_added[current_vertex]:
-    #             edge_weight = self.graph.edge_weights[(current_vertex, vertex)]
-    #             print(str(current_vertex.label) + " <-> " + str(vertex.label) + " = " + str(edge_weight))
-    #             alternative_path_distance = current_vertex.distance + edge_weight
-    #             print("Alternative Path Weight: " + str(alternative_path_distance) + " |" + str(vertex.distance))
-    #
-    #
-    #             # If shorter path from current_vertex to vertex is found, update vertex's distance and predecessor
-    #             if alternative_path_distance < vertex.distance:
-    #                 vertex.distance = alternative_path_distance
-    #                 vertex.previous_vertex = current_vertex
-    #
-    #     unvisited_vertices = list(copy.copy(self.graph.get_vertices()))
-    #     start_vertex = unvisited_vertices.pop(0)
-    #     current_best_weight = float('inf')
-    #
-    #     self.get_path(start_vertex, unvisited_vertices[7])
-
-
-
-    def get_path(self, start_vertex, end_vertex):
-        path = ""
-        current_vertex = end_vertex
-        while current_vertex is not start_vertex:
-            print("adding current vertex")
-            path = " -> " + str(current_vertex.label) + path
-            # path.append(current_vertex.label)
-            current_vertex = current_vertex.previous_vertex
-        print(path)
-        return path
-
-    def update_graph(self, truck):
-        # Reset graph in case the service has already been used
-        self.graph = Graph()
-
-        # Add vertex for starting position
-        hub_vert = Vertex(truck.starting_address, truck.starting_address)
-        hub_vert.distance = 0
-        self.graph.add_vertex(hub_vert)
-
-        # Add all vertices from package_list
-        for package in truck.packages:
-            vertex_is_unique = True
-            new_vertex = Vertex(package.id, package.address)
-            for vertex in self.graph.vertices_added:
-                if vertex.address == new_vertex.address:
-                    vertex_is_unique = False
-            if vertex_is_unique:
-                self.graph.add_vertex(new_vertex)
-
-        # For each vertex add undirected edge to every other vertex in the graph
-        for vertex_a in self.graph.vertices_added:
-            # print("Adding undirected edges to all locations from: " + str(vertex_a.address))
-            for vertex_b in self.graph.vertices_added:
-                a_to_b_weight = self.get_distance_between(vertex_a.address, vertex_b.address)
-                # print(str(vertex_a.address) + " <-> " + str(vertex_b.address) + " | Weight = " + str(a_to_b_weight))
-                self.graph.add_undirected_edge(vertex_a, vertex_b, a_to_b_weight)
+        return weight

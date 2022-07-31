@@ -16,21 +16,18 @@ class RouteService:
         self.time_increment = 2
         self.distance_service = DistanceService()
         self.place_list = self.distance_service.place_list
-        # Save point seed, this should give best chance at timely delivers with restrictions,
-        # not accounting for package #9
-        # self.t1_seed = [13, 14, 15, 16, 19, 20, 1, 29, 30, 31, 34, 37, 40]
-        # self.t2_seed = [3, 18, 36, 38]
-        # self.t3_seed = [6, 25, 28, 32]
-        self.t1_seed = [13, 14, 15, 16, 19, 20, 1, 29, 30, 31, 34, 37, 40, 2, 4, 5]
-        self.t2_seed = [3, 18, 36, 38, 7, 8, 10, 11, 12, 17, 21, 22, 23, 24, 26, 27]
-        self.t3_seed = [6, 25, 28, 32, 33, 35, 39]
+        self.t1_trip_1_seed = [13, 14, 15, 16, 19, 20, 1, 29, 34, 7]
+        self.t2_trip_1_seed = [30, 37, 40, 31]
+        self.t1_trip_2_seed = [8, 9, 10, 11, 12, 17, 21, 22, 23, 24]
+        self.t2_trip_2_seed = [25, 6]
+        self.t1_trip_3_seed = [26, 27, 28, 32]
+        self.t2_trip_3_seed = [3, 18, 36, 38, 5, 2, 4, 33, 35, 39]
         self.truck_1 = Truck("Truck 1")
         self.truck_2 = Truck("Truck 2")
-        self.truck_3 = Truck("Truck 3")
         self.all_packages = PackageService().all_package_list
         self.loaded_packages = []
 
-    def get_current_time(self):
+    def print_current_time(self):
         print(self.current_time.strftime("%I:%M %p"))
 
     def add_minutes(self, min):
@@ -62,52 +59,56 @@ class RouteService:
                 return package
         return None
 
-    def load_all_trucks(self):
-        # 13, 14, 15, 16, 19, 20 all need to be delivered together
-        # 3, 18, 36, 38 all need to be on 2 per requirements
-        # 6, 25, 28, 32 are delayed until 9:05 am
-        # 9 needs a corrected address which will be received at 10:20 am
+    def load_trip(self, trip_id):
+        seed_1 = None
+        seed_2 = None
+        if trip_id == 1:
+            seed_1 = self.t1_trip_1_seed
+            seed_2 = self.t2_trip_1_seed
+        if trip_id == 2:
+            seed_1 = self.t1_trip_2_seed
+            seed_2 = self.t2_trip_2_seed
+        if trip_id == 3:
+            seed_1 = self.t1_trip_3_seed
+            seed_2 = self.t2_trip_3_seed
 
-        # Helper function to load trucks with seed data from class init
-        self.seed_trucks()
+        if seed_1 is None or seed_2 is None:
+            raise Exception("Unknown trip_id given to load_trip in RouteService")
 
-    def seed_trucks(self):
-        if len(self.t1_seed) > 0:
-            for package_id in self.t1_seed:
+        if len(seed_1) > 0:
+            for package_id in seed_1:
                 self.load_truck(1, package_id)
                 self.loaded_packages.append(self.get_package_by_id(package_id))
             self.t1_seed = []
 
-        if len(self.t2_seed) > 0:
-            for package_id in self.t2_seed:
+        if len(seed_2) > 0:
+            for package_id in seed_2:
                 self.load_truck(2, package_id)
                 self.loaded_packages.append(self.get_package_by_id(package_id))
             self.t2_seed = []
-
-        if len(self.t3_seed) > 0:
-            for package_id in self.t3_seed:
-                self.load_truck(3, package_id)
-                self.loaded_packages.append(self.get_package_by_id(package_id))
-            self.t3_seed = []
 
     def load_truck(self, truck_id, package_id):
         if truck_id == 1:
             self.truck_1.load_package(self.get_package_by_id(package_id))
         if truck_id == 2:
             self.truck_2.load_package(self.get_package_by_id(package_id))
-        if truck_id == 3:
-            self.truck_3.load_package(self.get_package_by_id(package_id))
 
-    def print_route_info(self, package_list, label="", package_attribute="id"):
+    def optimize_truck_packages_greedy(self, truck_name):
+        print("************************************************************")
+        print("Optimizing for: " + getattr(self, truck_name).name)
+
+        self.print_optimizing_route_info(getattr(self, truck_name).packages, "Before Optimize")
+        self.distance_service.greedy_shortest_path(getattr(self, truck_name))
+        self.print_optimizing_route_info(getattr(self, truck_name).packages, "After Optimize")
+
+    def print_optimizing_route_info(self, package_list, label="", package_attribute="id"):
         print(label + " (List of the Package." + package_attribute + ")")
         print("[", end='')
         count = 0
         for package in package_list:
             count = count + 1
             if count == len(package_list):
-                first_delivery_distance = self.distance_service.get_distance_between("HUB", package_list[0].address)
-                route_distance = self.distance_service.get_total_distance(package_list)
-                total_distance = first_delivery_distance + route_distance
+                total_distance = self.distance_service.get_total_route_weight(package_list)
                 total_distance = total_distance.__round__(2)
                 minutes = (total_distance / 18) * 60
                 minutes = minutes.__round__(2)
@@ -116,26 +117,50 @@ class RouteService:
             else:
                 print(getattr(package, package_attribute), end=', ')
 
-    def sort_truck_packages_brute(self, truck_name):
+    def start_route(self, truck_name, start_time=datetime(2022, 1, 1, 8, 0)):
         print("************************************************************")
-        print("Sorting for: " + getattr(self, truck_name).name)
+        print("Starting route for: " + getattr(self, truck_name).name)
+        truck = getattr(self, truck_name)
+        self.current_time = start_time
 
-        self.print_route_info(getattr(self, truck_name).packages, "Before Sort")
+        full_route = [["Start", "HUB"]]
+        # Update packages to be 'en-route' and build path
+        for package in truck.packages:
+            package.delivery_status = "En-Route"
+            full_route.append([package.id, package.address])
+        full_route.append(["End", "HUB"])
 
-        getattr(self, truck_name).packages = self.distance_service.brute_shortest_path(
-            getattr(self, truck_name).packages)
+        print("Full Planned Route: ", end='')
+        print(full_route)
 
-        self.print_route_info(getattr(self, truck_name).packages, "After Sort")
+        for i in range(0, len(full_route) - 1):
+            delivery_distance = self.distance_service.get_distance_between(full_route[i][1], full_route[i + 1][1])
+            # print(full_route[i][1] + " - " + full_route[i + 1][1] + "\t| " + str(delivery_distance))
+            minutes_taken = (delivery_distance / 18) * 60
+            minutes_taken = minutes_taken.__round__(2)
+            self.add_minutes(minutes_taken)
+            if full_route[i + 1][0] != 'End':
+                truck.deliver_package(full_route[i + 1][0], self.current_time)
 
-    def sort_truck_packages_tsp(self, truck_name):
-        print("************************************************************")
-        print("Sorting for: " + getattr(self, truck_name).name)
+        print("[", end='')
+        for package in truck.delivered_packages:
+            if package.deadline != "EOD":
+                package.deadline = package.deadline.replace(" ", "")
+                package.deadline = package.deadline.replace(":", "")
+                package.deadline = package.deadline.replace("AM", "")
 
-        self.distance_service.tsp_shortest_path(getattr(self, truck_name))
+                if len(package.deadline) == 3:
+                    hour = package.deadline[0:1]
+                    min = package.deadline[1:3]
+                else:
+                    hour = package.deadline[0:2]
+                    min = package.deadline[2:4]
+                deadline = datetime(2022, 1, 1, int(hour), int(min))
+                print("(" + str(package.id) + ", " + str(package.delivery_time < deadline), end='), ')
+            else:
+                print("(" + str(package.id) + ", True", end='), ')
+        print("]")
 
-        # self.print_route_info(getattr(self, truck_name).packages, "Before Sort")
+        getattr(self, truck_name).last_time = self.current_time
 
-        # getattr(self, truck_name).packages = self.distance_service.tsp_shortest_path(
-        #     getattr(self, truck_name).packages)
 
-        # self.print_route_info(getattr(self, truck_name).packages, "After Sort")

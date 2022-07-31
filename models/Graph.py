@@ -1,6 +1,3 @@
-import copy
-
-
 class Vertex:
     def __init__(self, label, address):
         self.label = label
@@ -27,3 +24,15 @@ class Graph:
 
     def get_vertices(self):
         return self.vertices_added
+
+    def print_vertex_info(self):
+        vertex_list = []
+        separator = "*******************************************************************************************"
+        for vertex in self.vertices_added:
+            vertex_info = "(" + str(vertex.label) + ") \t|Dist: " + str(vertex.distance)
+            vertex_info = vertex_info + "\t| Address: " + vertex.address
+            vertex_info = vertex_info + "\n" + separator
+            vertex_list.append(vertex_info)
+
+        for info in vertex_list:
+            print(info)

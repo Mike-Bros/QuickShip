@@ -1,7 +1,7 @@
 # Author: Michael Bros
 # Student_ID: 002706681
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from models.Package import Package
 from models.Truck import Truck
 from services.DistanceService import DistanceService
@@ -9,91 +9,54 @@ from services.PackageService import PackageService
 from services.PlaceService import PlaceService
 from services.RouteService import RouteService
 
-
 if __name__ == '__main__':
+    # Startup RouteService and load trucks with seed data for trip 1
     route_service = RouteService()
-    route_service.load_all_trucks()
+    route_service.load_trip(1)
 
-    # available_packages = route_service.get_available_packages()
-    # for package in available_packages:
-    #     print(package.id)
+    # Use RouteService to help optimize the route for trip 1 using permutation and weight analysis
+    route_service.optimize_truck_packages_greedy("truck_1")
+    route_service.optimize_truck_packages_greedy("truck_2")
 
-    # print(route_service.get_package_by_address('177 W Price Ave').id)
-    #
-    # route_service.sort_truck_packages_tsp("truck_1")
+    # Start the day 8:00AM, change status of trucks that are on route
+    route_service.start_route("truck_1")
+    print(route_service.truck_1.last_time.strftime("%I:%M %p"))
+    route_service.start_route("truck_2")
+    print(route_service.truck_2.last_time.strftime("%I:%M %p"))
 
-    route_service.sort_truck_packages_brute("truck_1")
-    route_service.sort_truck_packages_brute("truck_2")
-    route_service.sort_truck_packages_brute("truck_3")
-    # route_service.sort_truck_packages(2)
-    # route_service.sort_truck_packages(3)
-    # sort_packages()
+    # Load trucks with seed data for trip 2
+    route_service.load_trip(2)
 
-    # place_service = PlaceService()
-    # package_service = PackageService()
-    # distance_service = DistanceService()
+    # Start route for trip 2 with start_time being the trucks last recorded time
+    # or delayed_time if the truck arrived back at the HUB before they can leave with the packages needed
+    delayed_time = datetime(2022, 1, 1, 10, 20)
+    if delayed_time > route_service.truck_1.last_time:
+        route_service.start_route("truck_1", delayed_time)
+    else:
+        route_service.start_route("truck_1", route_service.truck_1.last_time)
+    print(route_service.truck_1.last_time.strftime("%I:%M %p"))
+    delayed_time = datetime(2022, 1, 1, 9, 5)
+    if delayed_time > route_service.truck_2.last_time:
+        route_service.start_route("truck_2", delayed_time)
+    else:
+        route_service.start_route("truck_2", route_service.truck_2.last_time)
+    print(route_service.truck_2.last_time.strftime("%I:%M %p"))
 
-    # package_service.package_hash.print_table()
+    # Load trucks with seed data for trip 3
+    route_service.load_trip(3)
 
-    # t1 = Truck()
-    # for package in package_service.all_package_list:
-    #     if t1.can_add_package():
-    #         t1.load_package(package)
-    #     else:
-    #         break
-    #
-    # address = "410 S State St"
-    # closest_place = distance_service.min_distance(address, t1.packages)
-    # print()
-    # print(
-    #     address + " is closest to: " + closest_place.address + " with a distance of: " + str(distance_service.get_distance_between(
-    #         address, closest_place.address)))
+    # Start route for trip 3 with start_time being the trucks last recorded time
+    # at this point there are no more time constraints therefore no delay_time like trip 2
+    route_service.start_route("truck_1", route_service.truck_1.last_time)
+    print(route_service.truck_1.last_time.strftime("%I:%M %p"))
+    route_service.start_route("truck_2", route_service.truck_2.last_time)
+    print(route_service.truck_2.last_time.strftime("%I:%M %p"))
 
-    # print(distance_service.get_distance_between('195 W Oakland Ave', '195 W Oakland Ave'))
-    # print(distance_service.get_distance_between('',''))
+    # Check to see if there are any packages that have not yet been delivered
+    all_delivered_packages = route_service.truck_1.delivered_packages + route_service.truck_2.delivered_packages
+    print(len(all_delivered_packages))
+    all_seeds = route_service.t1_trip_1_seed + route_service.t2_trip_1_seed + route_service.t1_trip_2_seed + route_service.t2_trip_2_seed + route_service.t1_trip_3_seed + route_service.t2_trip_3_seed
+    all_seeds.sort()
+    print(len(all_seeds))
+    print(all_seeds)
 
-    # for package in package_list:
-    #     if package.id == 1 or package.id == 8:
-    #         t1.unload_package(package)
-    #
-    # places_list = PlaceService().place_list
-    # for place in places_list:
-    #     place.print()
-
-    # place_service = PlaceService()
-    # for place in place_service.place_list:
-    #     place.print()
-
-    # package_service = PackageService()
-    # package_hash = package_service.package_hash
-    #
-    # package_hash.print_table()
-
-    # items = [
-    #     [1, "123 Main"],
-    #     [2, "1234 Circle"],
-    #     [3, "321 Street"],
-    #     [12, "978 Curb"],
-    #     [11, "123 Court"],
-    # ]
-    #
-    # myHash = HashTable()
-    #
-    # print("Adding Items...........")
-    # for i in range(len(items)):
-    #     myHash.insert_or_update(items[i][0], items[i][1])
-    #
-    # print("\nPrinting...........")
-    # myHash.print_table()
-    #
-    # print("\nSearches...........")
-    # print(myHash.search(2))
-    # print(myHash.search(0))
-    #
-    # print("\nRemove Everything...........")
-    # # myHash.remove(11)
-    # for i in range(len(items)):
-    #     myHash.remove(items[i][0])
-    #
-    # print("\nPrinting after removal...........")
-    # myHash.print_table()

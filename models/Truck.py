@@ -8,7 +8,9 @@ class Truck:
         self.max_capacity = 16
         self.avg_speed = 18
         self.packages = []
+        self.delivered_packages = []
         self.starting_address = "HUB"
+        self.last_time = None
         self.seperator = "--------------------------------------------------------------------------------"
 
     def load_package(self, package):
@@ -35,7 +37,29 @@ class Truck:
         """
         if self.current_capacity() > 0:
             self.packages.remove(package)
-            print("Package #" + str(package.id) + " was unloaded")
+            # print("Package #" + str(package.id) + " was unloaded")
+
+    def deliver_package(self, package_id, delivery_time):
+        """Deliver a package, unloads package, adds package to the delivered packages, set package delivery time and status
+
+        :param delivery_time: Time the package was delivered
+        :type delivery_time:
+        :param package:
+        :type package: models.Package
+        """
+        package = None
+        for p in self.packages:
+            if p.id == package_id:
+                package = p
+
+        if package is None:
+            raise Exception("Given package to deliver is not on the truck!")
+
+        self.unload_package(package)
+        self.delivered_packages.append(package)
+        package.delivery_status = "Delivered"
+        package.delivery_time = delivery_time
+
 
     def print(self):
         """Helper printing function for the truck model
