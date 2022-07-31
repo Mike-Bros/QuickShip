@@ -9,6 +9,7 @@ class Truck:
         self.avg_speed = 18
         self.packages = []
         self.delivered_packages = []
+        self.total_mileage = 0
         self.starting_address = "HUB"
         self.last_time = None
         self.seperator = "--------------------------------------------------------------------------------"

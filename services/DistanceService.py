@@ -88,61 +88,81 @@ class DistanceService:
         """
         cur_route = copy.deepcopy(truck.packages)
 
-        close_package_a = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
-        cur_route.remove(close_package_a)
-        close_package_b = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
-        cur_route.remove(close_package_b)
-
-        # If the package list is any longer than 9 there are too many permutations to calculate quickly
-        # Instead split the list in half and find the optimized permutation of each half
-        # Then when the optimized halves are put together only the connection between the end of the first half and
-        # start of the second half is not accounted for and may be non-optimal
-        if len(cur_route) >= 9:
-            mid_index = int(len(cur_route) / 2)
-            half_a = cur_route[:mid_index]
-            half_b = cur_route[mid_index:]
-            cur_route_a = []
-            cur_route_b = []
-
-            # for half_a iteration add close_package_a to beginning before checking route weight
-            for route_perm in itertools.permutations(half_a):
-                new_route = [close_package_a]
-                for package in route_perm:
-                    new_route.append(package)
-                if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
-                    cur_route_a = new_route
-
-            # Get end of cur_route_a and find close package in half_b, this will be the first package in half b route
-            # This is to get an approximately okay distance between the start and finish of the 2 optimized halves
-            half_a_end = cur_route_a[-1]
-            start_of_half_b = min(half_b, key=lambda p: self.get_distance_between(half_a_end.address, p.address))
-            half_b.remove(start_of_half_b)
-
-            # for half_b iteration add close_package_b to beginning before checking route weight
-            for route_perm in itertools.permutations(half_b):
-                new_route = [start_of_half_b]
-                for package in route_perm:
-                    new_route.append(package)
-                new_route.append(close_package_b)
-                if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
-                    cur_route_b = new_route
-
-            if not cur_route_a or not cur_route_b:
-                raise Exception("In optimizing split route, either cur_route_a or cur_route_b was never set")
-            truck.packages = cur_route_a + cur_route_b
-
-        else:
-            for route_perm in itertools.permutations(cur_route):
-                # for each iteration add close_package_a to beginning and close_package_b to end
-                # before checking route weight
-                new_route = [close_package_a]
-                for package in route_perm:
-                    new_route.append(package)
-                new_route.append(close_package_b)
-                if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
-                    cur_route = new_route
-
+        # If the package list is 2 or fewer packages then there is little point in optimization
+        if len(cur_route) <= 2:
             truck.packages = cur_route
+        # If the package list is 3 then we can find an optimal path by choosing the 2 closest packages to the hub
+        # and putting those on either end of the route.
+        # This will only improve the route if the original routes middle package is one of the 2 closest packages to
+        # the hub, otherwise the new_route will have the same weight as original route
+        elif len(cur_route) == 3:
+            new_route = []
+            close_package_a = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
+            cur_route.remove(close_package_a)
+            close_package_b = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
+            cur_route.remove(close_package_b)
+            middle_package = cur_route.pop()
+
+            new_route.append(close_package_a)
+            new_route.append(middle_package)
+            new_route.append(close_package_b)
+            truck.packages = new_route
+        else:
+            close_package_a = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
+            cur_route.remove(close_package_a)
+            close_package_b = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
+            cur_route.remove(close_package_b)
+
+            # If the package list is any longer than 9 there are too many permutations to calculate quickly
+            # Instead split the list in half and find the optimized permutation of each half
+            # Then when the optimized halves are put together only the connection between the end of the first half and
+            # start of the second half is not accounted for and may be non-optimal
+            if len(cur_route) >= 9:
+                mid_index = int(len(cur_route) / 2)
+                half_a = cur_route[:mid_index]
+                half_b = cur_route[mid_index:]
+                cur_route_a = []
+                cur_route_b = []
+
+                # for half_a iteration add close_package_a to beginning before checking route weight
+                for route_perm in itertools.permutations(half_a):
+                    new_route = [close_package_a]
+                    for package in route_perm:
+                        new_route.append(package)
+                    if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
+                        cur_route_a = new_route
+
+                # Get end of cur_route_a and find close package in half_b, this will be the first package in half b route
+                # This is to get an approximately okay distance between the start and finish of the 2 optimized halves
+                half_a_end = cur_route_a[-1]
+                start_of_half_b = min(half_b, key=lambda p: self.get_distance_between(half_a_end.address, p.address))
+                half_b.remove(start_of_half_b)
+
+                # for half_b iteration add close_package_b to beginning before checking route weight
+                for route_perm in itertools.permutations(half_b):
+                    new_route = [start_of_half_b]
+                    for package in route_perm:
+                        new_route.append(package)
+                    new_route.append(close_package_b)
+                    if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
+                        cur_route_b = new_route
+
+                if not cur_route_a or not cur_route_b:
+                    raise Exception("In optimizing split route, either cur_route_a or cur_route_b was never set")
+                truck.packages = cur_route_a + cur_route_b
+
+            else:
+                for route_perm in itertools.permutations(cur_route):
+                    # for each iteration add close_package_a to beginning and close_package_b to end
+                    # before checking route weight
+                    new_route = [close_package_a]
+                    for package in route_perm:
+                        new_route.append(package)
+                    new_route.append(close_package_b)
+                    if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
+                        cur_route = new_route
+
+                truck.packages = cur_route
 
     def get_total_route_weight(self, route, toggle_half_mode=''):
         """Gets the total distance/weight/cost of a given route accounting for starting and finishing at the HUB

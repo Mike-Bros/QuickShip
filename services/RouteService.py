@@ -94,12 +94,17 @@ class RouteService:
         :param truck_name: Name of truck attribute to optimize (IE: "truck_1")
         :type truck_name: str
         """
+        truck = getattr(self, truck_name)
         print("************************************************************")
-        print("Optimizing for: " + getattr(self, truck_name).name)
+        print("Optimizing for: " + truck.name)
 
-        self.print_optimizing_route_info(getattr(self, truck_name).packages, "Before Optimize")
-        self.distance_service.greedy_shortest_path(getattr(self, truck_name))
-        self.print_optimizing_route_info(getattr(self, truck_name).packages, "After Optimize")
+        self.print_optimizing_route_info(truck.packages, "Before Optimize")
+        self.distance_service.greedy_shortest_path(truck)
+        self.print_optimizing_route_info(truck.packages, "After Optimize")
+
+        # After optimization truck has final planned route, add total distance for the route to Truck's total_mileage
+        total_distance = self.distance_service.get_total_route_weight(truck.packages)
+        truck.total_mileage = truck.total_mileage + total_distance
 
     def print_optimizing_route_info(self, package_list, label="", package_attribute="id"):
         """Helper function to print helpful route info, main purpose to visualize optimization step
