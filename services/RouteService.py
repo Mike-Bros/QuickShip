@@ -11,6 +11,7 @@ class RouteService:
         # time is measured in minutes, find hours by /60
         # start time 8:00 AM - 8*60 = 480 minutes
         self.start_time = datetime(2022, 1, 1, 8, 0)
+        self.eod = datetime(2022, 1, 1, 17, 0) # 5:00 PM
         self.current_time = self.start_time
         self.time_increment = 2
         self.distance_service = DistanceService()
@@ -28,38 +29,25 @@ class RouteService:
         self.loaded_packages = []
 
     def print_current_time(self):
+        """Helper function to print the human-readable current time
+
+        """
         print(self.current_time.strftime("%I:%M %p"))
 
     def add_minutes(self, min):
+        """Add minutes to the service's current time
+
+        :param min: Minutes to add
+        :type min: int
+        """
         self.current_time = self.current_time + timedelta(minutes=min)
 
-    def get_available_packages(self):
-        available_packages = self.all_packages.copy()
-        for package in self.loaded_packages:
-            if available_packages.__contains__(package):
-                available_packages.remove(package)
-        return available_packages
-
-    def get_package_by_id(self, id):
-        for package in self.all_packages:
-            if id == package.id:
-                return package
-        return None
-
-    def get_package_by_address(self, address):
-        """
-
-        :param address:
-        :type address: str
-        :return: The first package associated with given address
-        :rtype: models.Package
-        """
-        for package in self.all_packages:
-            if address == package.address:
-                return package
-        return None
-
     def load_trip(self, trip_id):
+        """Loads the service's seed data into the service's trucks for the specified trip_id
+
+        :param trip_id: Trip to seed trucks with
+        :type trip_id: int
+        """
         seed_1 = None
         seed_2 = None
         if trip_id == 1:
@@ -78,22 +66,34 @@ class RouteService:
         if len(seed_1) > 0:
             for package_id in seed_1:
                 self.load_truck(1, package_id)
-                self.loaded_packages.append(self.get_package_by_id(package_id))
+                self.loaded_packages.append(self.package_service.get_package_by_id(package_id))
             self.t1_seed = []
 
         if len(seed_2) > 0:
             for package_id in seed_2:
                 self.load_truck(2, package_id)
-                self.loaded_packages.append(self.get_package_by_id(package_id))
+                self.loaded_packages.append(self.package_service.get_package_by_id(package_id))
             self.t2_seed = []
 
     def load_truck(self, truck_id, package_id):
+        """Load truck with package
+
+        :param truck_id: Truck to load
+        :type truck_id: int
+        :param package_id: Package to load
+        :type package_id: int
+        """
         if truck_id == 1:
-            self.truck_1.load_package(self.get_package_by_id(package_id))
+            self.truck_1.load_package(self.package_service.get_package_by_id(package_id))
         if truck_id == 2:
-            self.truck_2.load_package(self.get_package_by_id(package_id))
+            self.truck_2.load_package(self.package_service.get_package_by_id(package_id))
 
     def optimize_truck_packages_greedy(self, truck_name):
+        """Optimizes truck package_list using the DistanceService's greedy_shortest_path function
+
+        :param truck_name: Name of truck attribute to optimize (IE: "truck_1")
+        :type truck_name: str
+        """
         print("************************************************************")
         print("Optimizing for: " + getattr(self, truck_name).name)
 
@@ -102,6 +102,15 @@ class RouteService:
         self.print_optimizing_route_info(getattr(self, truck_name).packages, "After Optimize")
 
     def print_optimizing_route_info(self, package_list, label="", package_attribute="id"):
+        """Helper function to print helpful route info, main purpose to visualize optimization step
+
+        :param package_list:
+        :type package_list: list
+        :param label:
+        :type label: str
+        :param package_attribute:
+        :type package_attribute: str
+        """
         print(label + " (List of the Package." + package_attribute + ")")
         print("[", end='')
         count = 0
@@ -118,6 +127,13 @@ class RouteService:
                 print(getattr(package, package_attribute), end=', ')
 
     def start_route(self, truck_name, start_time=datetime(2022, 1, 1, 8, 0)):
+        """Starts a route for the given truck, simulates and updates delivery of truck's packages
+
+        :param truck_name: Name of truck attribute to optimize (IE: "truck_1")
+        :type truck_name: str
+        :param start_time: Time the route is supposed to start, be default 1/1/22 @8:00AM
+        :type start_time: datetime
+        """
         print("************************************************************")
         print("Starting route for: " + getattr(self, truck_name).name)
         truck = getattr(self, truck_name)
@@ -140,28 +156,39 @@ class RouteService:
             minutes_taken = minutes_taken.__round__(2)
             self.add_minutes(minutes_taken)
             if full_route[i + 1][0] != 'End':
-                truck.deliver_package(full_route[i + 1][0], self.current_time)
+                package_id = full_route[i + 1][0]
+                package_deadline = self.get_package_deadline_datetime(self.package_service.get_package_by_id(package_id))
+                truck.deliver_package(package_id, package_deadline, self.current_time)
 
         print("[", end='')
         for package in truck.delivered_packages:
-            package_deadline_copy = copy.deepcopy(package.deadline)
-            if package.deadline != "EOD":
-                package_deadline_copy = package_deadline_copy.replace(" ", "")
-                package_deadline_copy = package_deadline_copy.replace(":", "")
-                package_deadline_copy = package_deadline_copy.replace("AM", "")
-
-                if len(package_deadline_copy) == 3:
-                    hour = package_deadline_copy[0:1]
-                    min = package_deadline_copy[1:3]
-                else:
-                    hour = package_deadline_copy[0:2]
-                    min = package_deadline_copy[2:4]
-                deadline = datetime(2022, 1, 1, int(hour), int(min))
-                print("(" + str(package.id) + ", " + str(package.delivery_time < deadline), end='), ')
-            else:
-                print("(" + str(package.id) + ", True", end='), ')
+            deadline = self.get_package_deadline_datetime(package)
+            print("(" + str(package.id) + ", " + str(package.delivery_time < deadline), end='), ')
         print("]")
 
         getattr(self, truck_name).last_time = self.current_time
 
+    def get_package_deadline_datetime(self, package):
+        """Helper function to get the datetime object of the given package's delivery deadline
 
+        :param package:
+        :type package: models.Package
+        :return:
+        :rtype: datetime
+        """
+        package_deadline_copy = copy.deepcopy(package.deadline)
+        if package.deadline != "EOD":
+            package_deadline_copy = package_deadline_copy.replace(" ", "")
+            package_deadline_copy = package_deadline_copy.replace(":", "")
+            package_deadline_copy = package_deadline_copy.replace("AM", "")
+
+            if len(package_deadline_copy) == 3:
+                hour = package_deadline_copy[0:1]
+                min = package_deadline_copy[1:3]
+            else:
+                hour = package_deadline_copy[0:2]
+                min = package_deadline_copy[2:4]
+            return datetime(2022, 1, 1, int(hour), int(min))
+        else:
+            # EOD = 5PM
+            return self.eod

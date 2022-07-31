@@ -39,11 +39,13 @@ class Truck:
             self.packages.remove(package)
             # print("Package #" + str(package.id) + " was unloaded")
 
-    def deliver_package(self, package_id, delivery_time):
+    def deliver_package(self, package_id, package_deadline, delivery_time):
         """Deliver a package, unloads package, adds package to the delivered packages, set package delivery time and status
 
+        :param package_deadline: Deadline given package_id needs to be delivered by
+        :type package_deadline: datetime
         :param delivery_time: Time the package is delivered
-        :type delivery_time:
+        :type delivery_time: datetime
         :param package_id: Unique ID of the package to deliver
         :type package_id: int
         """
@@ -57,9 +59,12 @@ class Truck:
 
         self.unload_package(package)
         self.delivered_packages.append(package)
-        package.delivery_status = "Delivered"
         package.delivery_time = delivery_time
-
+        # package.delivery_status = "Delivered"
+        if delivery_time < package_deadline:
+            package.delivery_status = "Delivered On Time"
+        else:
+            package.delivery_status = "Delivered - Late"
 
     def print(self):
         """Helper printing function for the truck model
@@ -79,6 +84,9 @@ class Truck:
         print(self.seperator)
 
     def print_packages(self):
+        """Helper printing function for the truck's package list
+
+        """
         for package in self.packages:
             print(package.id, end=', ')
         print()

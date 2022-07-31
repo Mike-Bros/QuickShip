@@ -4,7 +4,10 @@
 from datetime import datetime
 from services.RouteService import RouteService
 
-if __name__ == '__main__':
+def simulate_day():
+    """Simulates the day of deliveries using the route_service to manage the trucks and routes
+
+    """
     # Startup RouteService and load trucks with seed data for trip 1
     route_service = RouteService()
     route_service.load_trip(1)
@@ -58,3 +61,6 @@ if __name__ == '__main__':
     route_service.package_service.refresh_package_table(all_delivered_packages)
     for i in range(1, len(all_delivered_packages) + 1):
         route_service.package_service.get_package_by_id(i).print()
+
+if __name__ == '__main__':
+    simulate_day()

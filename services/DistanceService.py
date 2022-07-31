@@ -31,6 +31,13 @@ class DistanceService:
         print("Finished ingesting Distances")
 
     def get_place_by_address(self, address):
+        """Get Place object for given address
+
+        :param address:
+        :type address: str
+        :return: The matching place for the given address
+        :rtype: models.Place
+        """
         for place in self.place_list:
             if place.address == address:
                 return place
@@ -73,19 +80,12 @@ class DistanceService:
 
         return float(distance_value)
 
-    def get_total_distance(self, package_list):
-        last_package_address = None
-        distance_list = [self.get_distance_between("HUB", package_list[0].address)]
-
-        for package in package_list:
-            if last_package_address is None:
-                last_package_address = copy.deepcopy(package.address)
-            else:
-                distance_list.append(self.get_distance_between(package.address, last_package_address))
-        distance_list.append(self.get_distance_between("HUB", package_list[-1].address))
-        return sum(distance_list)
-
     def greedy_shortest_path(self, truck):
+        """Optimizes Truck's package_list into a feasible route
+
+        :param truck: Truck that needs package_list to be optimized
+        :type truck: models.Truck
+        """
         cur_route = copy.deepcopy(truck.packages)
 
         close_package_a = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
@@ -145,6 +145,17 @@ class DistanceService:
             truck.packages = cur_route
 
     def get_total_route_weight(self, route, toggle_half_mode=''):
+        """Gets the total distance/weight/cost of a given route accounting for starting and finishing at the HUB
+         by default. If toggle_half_mode is provided calculation only accounts for start or finishing at HUB not both.
+
+
+        :param route: Ordered list of packages
+        :type route: list
+        :param toggle_half_mode: Optional param valid options a or b
+        :type toggle_half_mode: str
+        :return: The total distance through route accounting for starting and finishing at HUB
+        :rtype: int
+        """
         complete_route = None
         if toggle_half_mode == '':
             # Create complete route list of addresses including start and goal which is always HUB

@@ -27,6 +27,11 @@ class PackageService:
         print("Finished ingesting packages")
 
     def refresh_package_table(self, packages):
+        """ Given a list of packages this will refresh the service's package table and list
+
+        :param packages: A list of packages
+        :type packages: list
+        """
         # Reset the packages
         self.package_hash = PackageTable()
         self.all_package_list = []
@@ -36,6 +41,13 @@ class PackageService:
             self.all_package_list.append(package)
 
     def get_package_by_id(self, package_id):
+        """Efficiently get package object by given package ID using table lookup
+
+        :param package_id: ID of the package to get
+        :type package_id: int
+        :return: Package with the given package_id
+        :rtype: models.Package
+        """
         found_package = self.package_hash.search(package_id)
         if found_package is None:
             raise Exception("Package: " + str(package_id) + " was not found")
