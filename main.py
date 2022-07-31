@@ -49,9 +49,12 @@ if __name__ == '__main__':
 
     # Check to see if there are any packages that have not yet been delivered
     all_delivered_packages = route_service.truck_1.delivered_packages + route_service.truck_2.delivered_packages
-    print(len(all_delivered_packages))
-    all_seeds = route_service.t1_trip_1_seed + route_service.t2_trip_1_seed + route_service.t1_trip_2_seed + route_service.t2_trip_2_seed + route_service.t1_trip_3_seed + route_service.t2_trip_3_seed
-    all_seeds.sort()
-    print(len(all_seeds))
-    print(all_seeds)
+    if len(all_delivered_packages) < 40:
+        raise Exception("Not all packages delivered, only have " + str(len(all_delivered_packages)) + " delivered")
 
+    route_service.package_service.package_hash.print_table()
+
+    # Now that simulation day has finished we refresh the package_service table for efficient lookups
+    route_service.package_service.refresh_package_table(all_delivered_packages)
+    for i in range(1, len(all_delivered_packages) + 1):
+        route_service.package_service.get_package_by_id(i).print()

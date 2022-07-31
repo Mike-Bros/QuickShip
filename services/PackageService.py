@@ -7,6 +7,7 @@ class PackageService:
     """A service class to assist ingesting package data
 
     """
+
     def __init__(self):
         self.package_hash = PackageTable()
         self.all_package_list = []
@@ -25,5 +26,17 @@ class PackageService:
             self.all_package_list.append(new_package)
         print("Finished ingesting packages")
 
+    def refresh_package_table(self, packages):
+        # Reset the packages
+        self.package_hash = PackageTable()
+        self.all_package_list = []
+
+        for package in packages:
+            self.package_hash.insert_or_update(package.id, package)
+            self.all_package_list.append(package)
+
     def get_package_by_id(self, package_id):
-        return self.package_hash.search(package_id)
+        found_package = self.package_hash.search(package_id)
+        if found_package is None:
+            raise Exception("Package: " + str(package_id) + " was not found")
+        return found_package

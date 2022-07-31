@@ -39,13 +39,18 @@ class PackageTable:
         :rtype: models.Package
         """
         bucket = self.get_bucket(key)
+        # print("Looking for package key: " + str(key) + " in bucket: " + str(bucket))
         bucket_list = self.table[bucket]
+        # print("Object in bucket: ", end='')
+        # print(bucket_list)
 
         for key_value in bucket_list:
+            # print("Key value = " + str(key_value))
             if key_value[0] == key:
                 return key_value[1]  # return value of key found
-            else:
-                return None
+
+        # If no key has been found at this point then key is not in table
+        return None
 
     def remove(self, key):
         """Remove by package ID

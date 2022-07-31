@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime, timedelta
 
 from services.DistanceService import DistanceService
@@ -22,7 +23,8 @@ class RouteService:
         self.t2_trip_3_seed = [3, 18, 36, 38, 5, 2, 4, 33, 35, 39]
         self.truck_1 = Truck("Truck 1")
         self.truck_2 = Truck("Truck 2")
-        self.all_packages = PackageService().all_package_list
+        self.package_service = PackageService()
+        self.all_packages = self.package_service.all_package_list
         self.loaded_packages = []
 
     def print_current_time(self):
@@ -142,17 +144,18 @@ class RouteService:
 
         print("[", end='')
         for package in truck.delivered_packages:
+            package_deadline_copy = copy.deepcopy(package.deadline)
             if package.deadline != "EOD":
-                package.deadline = package.deadline.replace(" ", "")
-                package.deadline = package.deadline.replace(":", "")
-                package.deadline = package.deadline.replace("AM", "")
+                package_deadline_copy = package_deadline_copy.replace(" ", "")
+                package_deadline_copy = package_deadline_copy.replace(":", "")
+                package_deadline_copy = package_deadline_copy.replace("AM", "")
 
-                if len(package.deadline) == 3:
-                    hour = package.deadline[0:1]
-                    min = package.deadline[1:3]
+                if len(package_deadline_copy) == 3:
+                    hour = package_deadline_copy[0:1]
+                    min = package_deadline_copy[1:3]
                 else:
-                    hour = package.deadline[0:2]
-                    min = package.deadline[2:4]
+                    hour = package_deadline_copy[0:2]
+                    min = package_deadline_copy[2:4]
                 deadline = datetime(2022, 1, 1, int(hour), int(min))
                 print("(" + str(package.id) + ", " + str(package.delivery_time < deadline), end='), ')
             else:
