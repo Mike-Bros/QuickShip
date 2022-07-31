@@ -1,12 +1,8 @@
 import copy
 import itertools
-import random
-from collections import deque
 
 import pandas as pd
 
-from models.Graph import Graph
-from models.Graph import Vertex
 from services.PlaceService import PlaceService
 
 
@@ -17,11 +13,8 @@ class DistanceService:
 
     def __init__(self):
         self.distance_list = []
-        self.graph = Graph
         self.vertices_added = []
         self.place_list = PlaceService().place_list
-        self.hub_vertex = Vertex("HUB", "HUB")
-        self.hub_vertex.distance = 0
         self.ingest_distances()
 
     def ingest_distances(self):
@@ -82,16 +75,14 @@ class DistanceService:
 
     def get_total_distance(self, package_list):
         last_package_address = None
-        distance_list = []
+        distance_list = [self.get_distance_between("HUB", package_list[0].address)]
 
-        distance_list.append(self.get_distance_between("HUB", package_list[0].address))
         for package in package_list:
             if last_package_address is None:
                 last_package_address = copy.deepcopy(package.address)
             else:
                 distance_list.append(self.get_distance_between(package.address, last_package_address))
         distance_list.append(self.get_distance_between("HUB", package_list[-1].address))
-
         return sum(distance_list)
 
     def greedy_shortest_path(self, truck):
@@ -180,5 +171,4 @@ class DistanceService:
         weight = 0
         for i in range(0, len(complete_route) - 1):
             weight = weight + self.get_distance_between(complete_route[i], complete_route[i + 1])
-
         return weight

@@ -25,6 +25,5 @@ class PackageService:
             self.all_package_list.append(new_package)
         print("Finished ingesting packages")
 
-    def truck_load_packages(self):
-        
-        pass
+    def get_package_by_id(self, package_id):
+        return self.package_hash.search(package_id)

@@ -1,9 +1,7 @@
-import copy
 from datetime import datetime, timedelta
 
 from services.DistanceService import DistanceService
 from services.PackageService import PackageService
-from services.PlaceService import PlaceService
 from models.Truck import Truck
 
 

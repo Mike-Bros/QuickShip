@@ -1,12 +1,7 @@
 # Author: Michael Bros
 # Student_ID: 002706681
 
-from datetime import timedelta, datetime
-from models.Package import Package
-from models.Truck import Truck
-from services.DistanceService import DistanceService
-from services.PackageService import PackageService
-from services.PlaceService import PlaceService
+from datetime import datetime
 from services.RouteService import RouteService
 
 if __name__ == '__main__':

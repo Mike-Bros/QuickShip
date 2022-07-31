@@ -42,10 +42,10 @@ class Truck:
     def deliver_package(self, package_id, delivery_time):
         """Deliver a package, unloads package, adds package to the delivered packages, set package delivery time and status
 
-        :param delivery_time: Time the package was delivered
+        :param delivery_time: Time the package is delivered
         :type delivery_time:
-        :param package:
-        :type package: models.Package
+        :param package_id: Unique ID of the package to deliver
+        :type package_id: int
         """
         package = None
         for p in self.packages:
