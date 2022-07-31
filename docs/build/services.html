@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Service Classes &#8212; QuickShip  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Model Classes" href="models.html" />
+    <link rel="prev" title="Welcome to QuickShip’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="service-classes">
+<h1>Service Classes<a class="headerlink" href="#service-classes" title="Permalink to this heading">¶</a></h1>
+<p>These are the functions that my project provides</p>
+<span class="target" id="module-services.DistanceService"></span><dl class="py class">
+<dt class="sig sig-object py" id="services.DistanceService.DistanceService">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">services.DistanceService.</span></span><span class="sig-name descname"><span class="pre">DistanceService</span></span><a class="headerlink" href="#services.DistanceService.DistanceService" title="Permalink to this definition">¶</a></dt>
+<dd><p>A service class to assist with retrieving distance values</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="services.DistanceService.DistanceService.get_distance_between">
+<span class="sig-name descname"><span class="pre">get_distance_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address_b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.DistanceService.DistanceService.get_distance_between" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Distance Between Addresses</p>
+<p>Given address a &amp; b returns the distance in miles as a float.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address_a</strong> (<em>str</em>) – </p></li>
+<li><p><strong>address_b</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The distance between address a &amp; b</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.DistanceService.DistanceService.get_place_by_address">
+<span class="sig-name descname"><span class="pre">get_place_by_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.DistanceService.DistanceService.get_place_by_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Place object for given address</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matching place for the given address</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>models.Place</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.DistanceService.DistanceService.get_total_route_weight">
+<span class="sig-name descname"><span class="pre">get_total_route_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toggle_half_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.DistanceService.DistanceService.get_total_route_weight" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Gets the total distance/weight/cost of a given route accounting for starting and finishing at the HUB</dt><dd><p>by default. If toggle_half_mode is provided calculation only accounts for start or finishing at HUB not both.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>route</strong> (<em>list</em>) – Ordered list of packages</p></li>
+<li><p><strong>toggle_half_mode</strong> (<em>str</em>) – Optional param valid options a or b</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total distance through route accounting for starting and finishing at HUB</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.DistanceService.DistanceService.greedy_shortest_path">
+<span class="sig-name descname"><span class="pre">greedy_shortest_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">truck</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.DistanceService.DistanceService.greedy_shortest_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimizes Truck’s package_list into a feasible route</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>truck</strong> (<em>models.Truck</em>) – Truck that needs package_list to be optimized</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.DistanceService.DistanceService.ingest_distances">
+<span class="sig-name descname"><span class="pre">ingest_distances</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#services.DistanceService.DistanceService.ingest_distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that runs during class init to read in Distance data from distances.csv in root.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-services.PackageService"></span><dl class="py class">
+<dt class="sig sig-object py" id="services.PackageService.PackageService">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">services.PackageService.</span></span><span class="sig-name descname"><span class="pre">PackageService</span></span><a class="headerlink" href="#services.PackageService.PackageService" title="Permalink to this definition">¶</a></dt>
+<dd><p>A service class to assist ingesting package data</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="services.PackageService.PackageService.get_package_by_id">
+<span class="sig-name descname"><span class="pre">get_package_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.PackageService.PackageService.get_package_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Efficiently get package object by given package ID using table lookup</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>package_id</strong> (<em>int</em>) – ID of the package to get</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Package with the given package_id</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>models.Package</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.PackageService.PackageService.ingest_packages">
+<span class="sig-name descname"><span class="pre">ingest_packages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#services.PackageService.PackageService.ingest_packages" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that runs during class init to read in Package data from packages.csv in root.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.PackageService.PackageService.refresh_package_table">
+<span class="sig-name descname"><span class="pre">refresh_package_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packages</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.PackageService.PackageService.refresh_package_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of packages this will refresh the service’s package table and list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packages</strong> (<em>list</em>) – A list of packages</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-services.PlaceService"></span><dl class="py class">
+<dt class="sig sig-object py" id="services.PlaceService.PlaceService">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">services.PlaceService.</span></span><span class="sig-name descname"><span class="pre">PlaceService</span></span><a class="headerlink" href="#services.PlaceService.PlaceService" title="Permalink to this definition">¶</a></dt>
+<dd><p>A service class to assist with retrieving places</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="services.PlaceService.PlaceService.ingest_places">
+<span class="sig-name descname"><span class="pre">ingest_places</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#services.PlaceService.PlaceService.ingest_places" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that runs during class init to read in Place data from distances.csv in root.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-services.RouteService"></span></section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">QuickShip</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Service Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Model Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to QuickShip’s documentation!</a></li>
+      <li>Next: <a href="models.html" title="next chapter">Model Classes</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Michael Bros.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/services.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

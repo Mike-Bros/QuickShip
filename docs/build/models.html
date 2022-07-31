@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Model Classes &#8212; QuickShip  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Service Classes" href="services.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="model-classes">
+<h1>Model Classes<a class="headerlink" href="#model-classes" title="Permalink to this heading">¶</a></h1>
+<p>These are the functions that my project provides</p>
+<span class="target" id="module-models.Package"></span><dl class="py class">
+<dt class="sig sig-object py" id="models.Package.Package">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.Package.</span></span><span class="sig-name descname"><span class="pre">Package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Package.Package" title="Permalink to this definition">¶</a></dt>
+<dd><p>A model of a package to better store and retrieve package attributes</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Package.Package.print">
+<span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.Package.Package.print" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper printing function for the package model</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Package.Package.print_verbose">
+<span class="sig-name descname"><span class="pre">print_verbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.Package.Package.print_verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for printing representation of package with all package attributes</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-models.PackageTable"></span><dl class="py class">
+<dt class="sig sig-object py" id="models.PackageTable.PackageTable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.PackageTable.</span></span><span class="sig-name descname"><span class="pre">PackageTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_capacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.PackageTable.PackageTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>An abstract data structure that uses a chaining hash table to store package data</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.PackageTable.PackageTable.get_bucket">
+<span class="sig-name descname"><span class="pre">get_bucket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.PackageTable.PackageTable.get_bucket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to get the bucket index of the given item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item</strong> (<em>int</em>) – Package ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Bucket Index</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.PackageTable.PackageTable.insert_or_update">
+<span class="sig-name descname"><span class="pre">insert_or_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.PackageTable.PackageTable.insert_or_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a package into table or update existing entry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>int</em>) – The ID of the package to be added</p></li>
+<li><p><strong>value</strong> (<em>models.Package</em>) – The package object to be added</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool indicating success or failure of insert/update</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.PackageTable.PackageTable.print_table">
+<span class="sig-name descname"><span class="pre">print_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.PackageTable.PackageTable.print_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to print the current contents of the table</p>
+<p>Prints all buckets and their content displaying the package ID and Address for human readability</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.PackageTable.PackageTable.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.PackageTable.PackageTable.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove by package ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em>) – Package ID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.PackageTable.PackageTable.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.PackageTable.PackageTable.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search by package ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em>) – Package ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Package object or None if key does not exist</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>models.Package</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-models.Place"></span><dl class="py class">
+<dt class="sig sig-object py" id="models.Place.Place">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.Place.</span></span><span class="sig-name descname"><span class="pre">Place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zip</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Place.Place" title="Permalink to this definition">¶</a></dt>
+<dd><p>A model of a place to better store and retrieve place attributes</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Place.Place.print">
+<span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.Place.Place.print" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper printing function for the place model</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-models.Truck"></span><dl class="py class">
+<dt class="sig sig-object py" id="models.Truck.Truck">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.Truck.</span></span><span class="sig-name descname"><span class="pre">Truck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Truck.Truck" title="Permalink to this definition">¶</a></dt>
+<dd><p>A model of a truck to facilitate packaging simulation per project requirements</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Truck.Truck.can_add_package">
+<span class="sig-name descname"><span class="pre">can_add_package</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.Truck.Truck.can_add_package" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to check if more packages can be added or if the truck is at max capacity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Truck.Truck.current_capacity">
+<span class="sig-name descname"><span class="pre">current_capacity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.Truck.Truck.current_capacity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to get the current number of packages in the truck</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of packages loaded in the truck</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Truck.Truck.deliver_package">
+<span class="sig-name descname"><span class="pre">deliver_package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_deadline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delivery_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Truck.Truck.deliver_package" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deliver a package, unloads package, adds package to the delivered packages, set package delivery time and status</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>package_deadline</strong> (<em>datetime</em>) – Deadline given package_id needs to be delivered by</p></li>
+<li><p><strong>delivery_time</strong> (<em>datetime</em>) – Time the package is delivered</p></li>
+<li><p><strong>package_id</strong> (<em>int</em>) – Unique ID of the package to deliver</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Truck.Truck.load_package">
+<span class="sig-name descname"><span class="pre">load_package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Truck.Truck.load_package" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a package into the truck</p>
+<p>Does not allow for packages to go over the preset truck capacity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>package</strong> (<em>models.Package</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Truck.Truck.print">
+<span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.Truck.Truck.print" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper printing function for the truck model</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Truck.Truck.print_packages">
+<span class="sig-name descname"><span class="pre">print_packages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.Truck.Truck.print_packages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper printing function for the truck’s package list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.Truck.Truck.unload_package">
+<span class="sig-name descname"><span class="pre">unload_package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.Truck.Truck.unload_package" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unload a package off of the truck</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>package</strong> (<em>models.Package</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">QuickShip</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="services.html">Service Classes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="services.html" title="previous chapter">Service Classes</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Michael Bros.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/models.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
