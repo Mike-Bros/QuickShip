@@ -54,9 +54,6 @@ class RouteService:
         if trip_id == 2:
             seed_1 = self.t1_trip_2_seed
             seed_2 = self.t2_trip_2_seed
-        if trip_id == 3:
-            seed_1 = self.t1_trip_3_seed
-            seed_2 = self.t2_trip_3_seed
 
         if seed_1 is None or seed_2 is None:
             raise Exception("Unknown trip_id given to load_trip in RouteService")
@@ -147,6 +144,8 @@ class RouteService:
         # Update packages to be 'en-route' and build path
         for package in truck.packages:
             package.delivery_status = "En-Route"
+            package.delivery_truck = truck_name
+            package.en_route_time = self.current_time
             full_route.append([package.id, package.address])
         full_route.append(["End", "HUB"])
 

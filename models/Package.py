@@ -11,7 +11,9 @@ class Package:
         self.deadline = deadline
         self.mass = mass
         self.notes = notes
+        self.delivery_truck = None
         self.delivery_status = "Not Delivered"
+        self.en_route_time = None
         self.delivery_time = None
         self.seperator = "********************************************************************************"
 
@@ -25,7 +27,7 @@ class Package:
             stats = stats + self.delivery_time.strftime("%I:%M %p")
         else:
             stats = stats + str(self.delivery_time)
-        status = "Delivery Status: " + str(self.delivery_status)
+        status = "Package Left Hub: " + self.en_route_time.strftime("%I:%M %p") + "\t| Delivery Status: " + str(self.delivery_status) + "\t| Deliver Truck: " + self.delivery_truck
         full_address = "Address: " + self.address + " " + self.city + " " + self.state + ", " + str(self.zip)
         notes = "Special Notes: " + self.notes
 
@@ -41,8 +43,8 @@ class Package:
         """Helper printing function for the package model
 
         """
-        heading = "Package ID: " + str(self.id) + "\t| Status: " + str(self.delivery_status)
-        stats = "Deadline: " + self.deadline + "\t| Delivered: "
+        heading = "Package ID: " + str(self.id) + "\t| Status: " + str(self.delivery_status) + "\t| Delivery Truck: " + self.delivery_truck
+        stats = "Deadline: " + self.deadline + "\t| Package Left Hub: " + self.en_route_time.strftime("%I:%M %p") + "\t| Delivered: "
         if self.delivery_time is not None:
             stats = stats + self.delivery_time.strftime("%I:%M %p")
         else:

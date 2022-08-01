@@ -102,6 +102,71 @@ def simulate_day():
     else:
         raise Exception("Packages [13, 14, 15, 16, 19, 20] must all be delivered together")
 
+    # Finished the simulation return route_service to main method to be used in UI
+    return route_service
+
 
 if __name__ == '__main__':
-    simulate_day()
+    route_service = None
+    user_has_not_quit = True
+    print("Welcome to QuickShip!")
+    print("While the application is running input q anytime to quit")
+
+    while user_has_not_quit:
+        user_input = input(
+            "Are you ready to simulate the day? Type y or yes to begin (this will ingest csv data and simulate full delivery day)\n")
+        if user_input == 'q':
+            user_has_not_quit = False
+            break
+        if user_input == 'y' or user_input == 'yes':
+            route_service = simulate_day()
+            if route_service is None:
+                raise Exception("Simulation failed to return the route_service")
+            break
+
+    while user_has_not_quit:
+        print("Now in mode selection, type the corresponding letter to enter a mode")
+        print("Single Package Lookup - p" + "\t| Packages in Status Range - s")
+        user_input = input()
+        if user_input == 'q':
+            print("Quitting program...")
+            user_has_not_quit = False
+        elif user_input == 'p':
+            in_package_mode = True
+            print("Now in package lookup mode, at anytime type b to return to mode selection")
+            while in_package_mode:
+                user_input = input("Enter package ID\n")
+                if user_input == 'q':
+                    print("Quitting program...")
+                    in_package_mode = False
+                    user_has_not_quit = False
+                elif user_input == 'b':
+                    in_package_mode = False
+                else:
+                    package = route_service.package_service.get_package_by_id(int(user_input))
+                    package.print_verbose()
+        elif user_input == 's':
+            in_range_mode = True
+            print("Now in packages status range mode, at anytime type b to return to mode selection")
+            while in_range_mode:
+                print("Input time format HHMM, IE: 0930 = 9:30am, 1400 = 2:00pm")
+                print("You will need to specify a time range in the format HHMM:HHMM, EI: 0930-1400 = 9:30am-2:00pm")
+                user_input = input("Enter time range\n")
+                if user_input == 'q':
+                    print("Quitting program...")
+                    in_range_mode = False
+                    user_has_not_quit = False
+                elif user_input == 'b':
+                    in_range_mode = False
+                else:
+                    start_time = user_input.split('-')[0]
+                    start_hour = start_time[0:2]
+                    start_min = start_time[2:]
+                    start_time = datetime(2022, 1, 1, int(start_hour), int(start_min))
+
+                    end_time = user_input.split('-')[1]
+                    end_hour = end_time[0:2]
+                    end_min = end_time[2:]
+                    end_time = datetime(2022, 1, 1, int(end_hour), int(end_min))
+
+                    route_service.package_service.print_status_check(start_time, end_time)
