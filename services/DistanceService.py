@@ -116,16 +116,7 @@ class DistanceService:
             duplicates = []
             close_package_a = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
             cur_route.remove(close_package_a)
-            print(close_package_a.id)
-            # if close_package_a.id == 15:
-            #     for package in cur_route:
-            #         if package.address == close_package_a.address:
-            #             duplicates.append(package)
-            #     for package in duplicates:
-            #         cur_route.remove(package)
-
             close_package_b = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
-            print(close_package_b.id)
             cur_route.remove(close_package_b)
 
             # If the package list is any longer than 9 there are too many permutations to calculate quickly

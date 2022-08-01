@@ -20,9 +20,7 @@ def simulate_day():
 
     # Start the day 8:00AM, change status of trucks that are on route
     route_service.start_route("truck_1")
-    print(route_service.truck_1.last_time.strftime("%I:%M %p"))
     route_service.start_route("truck_2")
-    print(route_service.truck_2.last_time.strftime("%I:%M %p"))
 
     # Load trucks with seed data for trip 2
     route_service.load_trip(2)
@@ -37,13 +35,11 @@ def simulate_day():
         route_service.start_route("truck_1", delayed_time)
     else:
         route_service.start_route("truck_1", route_service.truck_1.last_time)
-    print(route_service.truck_1.last_time.strftime("%I:%M %p"))
     delayed_time = datetime(2022, 1, 1, 9, 5)
     if delayed_time > route_service.truck_2.last_time:
         route_service.start_route("truck_2", delayed_time)
     else:
         route_service.start_route("truck_2", route_service.truck_2.last_time)
-    print(route_service.truck_2.last_time.strftime("%I:%M %p"))
 
     all_delivered_packages = route_service.truck_1.delivered_packages + route_service.truck_2.delivered_packages
     # Now that simulation day has finished we refresh the package_service table for efficient lookups

@@ -165,12 +165,7 @@ class RouteService:
                     self.package_service.get_package_by_id(package_id))
                 truck.deliver_package(package_id, package_deadline, self.current_time)
 
-        print("[", end='')
-        for package in truck.delivered_packages:
-            deadline = self.get_package_deadline_datetime(package)
-            print("(" + str(package.id) + ", " + str(package.delivery_time < deadline), end='), ')
-        print("]")
-
+        print("Finished route by returning to hub @" + self.current_time.strftime("%I:%M %p"))
         getattr(self, truck_name).last_time = self.current_time
 
     def get_package_deadline_datetime(self, package):
