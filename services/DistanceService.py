@@ -87,6 +87,8 @@ class DistanceService:
         :type truck: models.Truck
         """
         cur_route = copy.deepcopy(truck.packages)
+        init_weight = self.get_total_route_weight(cur_route)
+
 
         # If the package list is 2 or fewer packages then there is little point in optimization
         if len(cur_route) <= 2:
@@ -106,11 +108,24 @@ class DistanceService:
             new_route.append(close_package_a)
             new_route.append(middle_package)
             new_route.append(close_package_b)
+
+            if init_weight < self.get_total_route_weight(new_route):
+                new_route = truck.packages
             truck.packages = new_route
         else:
+            duplicates = []
             close_package_a = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
             cur_route.remove(close_package_a)
+            print(close_package_a.id)
+            # if close_package_a.id == 15:
+            #     for package in cur_route:
+            #         if package.address == close_package_a.address:
+            #             duplicates.append(package)
+            #     for package in duplicates:
+            #         cur_route.remove(package)
+
             close_package_b = min(cur_route, key=lambda p: self.get_distance_between("HUB", p.address))
+            print(close_package_b.id)
             cur_route.remove(close_package_b)
 
             # If the package list is any longer than 9 there are too many permutations to calculate quickly
@@ -149,9 +164,12 @@ class DistanceService:
 
                 if not cur_route_a or not cur_route_b:
                     raise Exception("In optimizing split route, either cur_route_a or cur_route_b was never set")
-                truck.packages = cur_route_a + cur_route_b
-
+                cur_route = cur_route_a + cur_route_b
+                if init_weight < self.get_total_route_weight(cur_route):
+                    cur_route = truck.packages
+                truck.packages = cur_route
             else:
+                optimization_found = False
                 for route_perm in itertools.permutations(cur_route):
                     # for each iteration add close_package_a to beginning and close_package_b to end
                     # before checking route weight
@@ -161,7 +179,21 @@ class DistanceService:
                     new_route.append(close_package_b)
                     if self.get_total_route_weight(new_route) < self.get_total_route_weight(cur_route):
                         cur_route = new_route
-
+                        optimization_found = True
+                if not optimization_found:
+                    route = [close_package_a]
+                    for package in cur_route:
+                        route.append(package)
+                    route.append(close_package_b)
+                    cur_route = route
+                # if len(duplicates) > 0:
+                #     for package in cur_route:
+                #         if package.address == duplicates[0].address:
+                #             dup_index = cur_route.index(package)
+                #     for package in duplicates:
+                #         cur_route.insert(dup_index, package)
+                if init_weight < self.get_total_route_weight(cur_route):
+                    cur_route = truck.packages
                 truck.packages = cur_route
 
     def get_total_route_weight(self, route, toggle_half_mode=''):

@@ -11,17 +11,15 @@ class RouteService:
         # time is measured in minutes, find hours by /60
         # start time 8:00 AM - 8*60 = 480 minutes
         self.start_time = datetime(2022, 1, 1, 8, 0)
-        self.eod = datetime(2022, 1, 1, 17, 0) # 5:00 PM
+        self.eod = datetime(2022, 1, 1, 17, 0)  # 5:00 PM
         self.current_time = self.start_time
         self.time_increment = 2
         self.distance_service = DistanceService()
         self.place_list = self.distance_service.place_list
-        self.t1_trip_1_seed = [13, 14, 15, 16, 19, 20, 1, 29, 34, 7]
-        self.t2_trip_1_seed = [30, 37, 40, 31]
-        self.t1_trip_2_seed = [8, 9, 10, 11, 12, 17, 21, 22, 23, 24]
-        self.t2_trip_2_seed = [25, 6]
-        self.t1_trip_3_seed = [26, 27, 28, 32]
-        self.t2_trip_3_seed = [3, 18, 36, 38, 5, 2, 4, 33, 35, 39]
+        self.t1_trip_1_seed = [15, 16, 34, 19, 29, 7, 14, 13, 39, 20, 21, 1]
+        self.t2_trip_1_seed = [40, 4, 31, 37, 5, 38, 8, 30]
+        self.t1_trip_2_seed = [10, 24, 22, 11, 9, 12, 17, 23, 32]
+        self.t2_trip_2_seed = [27, 6, 33, 2, 36, 3, 25, 26, 28, 35, 18]
         self.truck_1 = Truck("Truck 1")
         self.truck_2 = Truck("Truck 2")
         self.package_service = PackageService()
@@ -98,6 +96,7 @@ class RouteService:
         print("************************************************************")
         print("Optimizing for: " + truck.name)
 
+        original_copy = truck.packages
         self.print_optimizing_route_info(truck.packages, "Before Optimize")
         self.distance_service.greedy_shortest_path(truck)
         self.print_optimizing_route_info(truck.packages, "After Optimize")
@@ -162,7 +161,8 @@ class RouteService:
             self.add_minutes(minutes_taken)
             if full_route[i + 1][0] != 'End':
                 package_id = full_route[i + 1][0]
-                package_deadline = self.get_package_deadline_datetime(self.package_service.get_package_by_id(package_id))
+                package_deadline = self.get_package_deadline_datetime(
+                    self.package_service.get_package_by_id(package_id))
                 truck.deliver_package(package_id, package_deadline, self.current_time)
 
         print("[", end='')
